@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src='/_ah/channel/jsapi'></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="/js/controller.js"></script>
+
+    <title>Aerochat</title>
+  </head>
+  
+  <body ng-app="app">
+    <div class="container-fluid">
+      <div class="row">
+	<div class="container">
+	  <h1 class="text-center">Aerochat</h1>
+	  <div class="col-md-6 col-md-offset-3"  ng-controller="MainPage">
+	    <form ng-submit="sendMessage()" class="form-inline" role="form">
+	      <label>Nickname</label>
+	      <input type="text" ng-model="author"><br />
+	      <label>Message</label>
+	      <input type="text" ng-model="message">
+	      <input type="submit" id="submit" value="Submit" />
+	    </form>
+	    <p>Press enter to submit too:</p>
+	    <div style="height:500px; border:1px solid; overflow:auto">
+	      <table class="table table-hover">
+		<tr  ng-repeat="message in messages">
+		  <td>
+		    <strong>{{ message.author }},
+		      {{ message.when}}:<br />
+		    </strong> {{ message.text }}</td>
+	      </tr>
+	      </table>
+	    </div>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
