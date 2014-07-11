@@ -116,7 +116,7 @@ class ConnectionPage(webapp.RequestHandler):
 class DisconnectionPage(webapp.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
-        chat = ChatManager().query_label('default')[0]
+        chat = ChatManager.chat_from_label('default')[0]
         clients = chat.clients
 
         try:
