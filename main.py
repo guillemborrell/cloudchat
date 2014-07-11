@@ -18,16 +18,35 @@ class ChatManager(ndb.Model):
     label = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
     clients = ndb.StringProperty(repeated=True)
-    
-    def query_label(cls, label):
+
+    @classmethod    
+    def chat_from_label(cls, label):
         return cls.query(ChatManager.label == label).fetch(1)
+        
+    
+    @classmethod
+    def clients_in_chat(cls, label):
+        chat = cls.query(ChatManager.label == label).fetch(1)
+        return len(chat.clients)
+        
+
+class Message(ndb.Model):
+    date = ndb.DateTimeProperty(auto_now_add=True)
+    author = ndb.StringProperty()
+    id_key = ndb.StringProperty()
+    text = ndb.StringProperty()
+
+    @classmethod
+    def query_last_from_chat(cls,num,chat_key):
+        query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
+        return query.order(-cls.date).fetch(10)
 
 
 class Event(ndb.Model):
     date = ndb.DateTimeProperty(auto_now_add=True)
     kind = ndb.StringProperty()
     data = ndb.JsonProperty()
-
+    
 
 class ServeToken(webapp.RequestHandler):
     def get(self):
@@ -54,7 +73,7 @@ class MessagePage(webapp.RequestHandler):
                                            'id':body['id']}
                   )
         event.put()
-        chat = ChatManager().query_label("default")[0]
+        chat = ChatManager.chat_from_label("default")[0]
         for client_id in chat.clients:
             channel.send_message(client_id,
                                  json.dumps(
@@ -77,7 +96,7 @@ class MainPage(webapp.RequestHandler):
 class ConnectionPage(webapp.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
-        chat = ChatManager().query_label('default')
+        chat = ChatManager.chat_from_label('default')
 
         if len(chat) == 0:
             print "Creating new default chat"
