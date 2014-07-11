@@ -99,7 +99,7 @@ class ConnectionPage(webapp.RequestHandler):
         chat = ChatManager.chat_from_label('default')
 
         if len(chat) == 0:
-            print "Creating new default chat"
+            logging.warning("Creating new default chat")
             clients = [client_id]
             newchat = ChatManager(label="default",clients=clients)
             newchat.put()
