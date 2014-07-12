@@ -162,8 +162,15 @@ class ChatPage(webapp.RequestHandler):
         self.response.out.write(''.join(l))
 
 
+class MainPage(webapp.RequestHandler):
+    def get(self):
+        self.response.out.headers['Content-Type'] = 'text/html'
+        self.response.out.write("<html><body><p>Chat in the cloud!</p></body></html>")
+
+
 application = webapp.WSGIApplication([
-    ('/chat', MainPage),
+    ('/', MainPage),
+    ('/chat', ChatPage),
     ('/new', NewChatPage),
     ('/_ah/channel/connected/',ConnectionPage),
     ('/_ah/channel/disconnected/',DisconnectionPage),
