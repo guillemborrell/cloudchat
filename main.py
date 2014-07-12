@@ -6,7 +6,6 @@ import datetime
 import logging
 import os
 import random
-import re
 import json
 from google.appengine.api import channel
 from google.appengine.ext import ndb
@@ -19,21 +18,21 @@ class ChatManager(ndb.Model):
     date = ndb.DateTimeProperty(auto_now_add=True)
     clients = ndb.StringProperty(repeated=True)
 
-    @classmethod    
-    def chat_from_label(cls, label):
-        return cls.query(ChatManager.label == label).fetch(1)
-        
-    
-    @classmethod
-    def clients_in_chat(cls, label):
-        chat = cls.query(ChatManager.label == label).fetch(1)
-        return len(chat.clients)
-        
+    def add_client(self, client):
+        client_list = self.clients
+        client_list.append(client)
+        self.put()
+
+    def remove_client(self, client):
+        client_list = self.clients
+        while client in client_list: client_list.remove(client)
+        self.put()
+
 
 class Message(ndb.Model):
     date = ndb.DateTimeProperty(auto_now_add=True)
     author = ndb.StringProperty()
-    id_key = ndb.StringProperty()
+    client = ndb.StringProperty()
     text = ndb.StringProperty()
 
     @classmethod
@@ -49,86 +48,123 @@ class Event(ndb.Model):
     
 
 class ServeToken(webapp.RequestHandler):
-    def get(self):
-        connection_id = os.urandom(16).encode('hex')
-        token = channel.create_channel(connection_id)
+    def get(self,chat):
+        ## Check if chat exists.
+        chat = ndb.Key(urlsafe=chat).get()
+        client_id = ''.join([chat.key,os.urandom(4).encode('hex')])
+        token = channel.create_channel(client_id)
         self.response.out.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps({'token':token,
-                                            'id':connection_id}))
+                                            'id':client_id}))
 
 
 class OpenedPage(webapp.RequestHandler):
     def post(self):
         body = json.loads(self.request.body)
         event = Event(kind = 'connection',
-                      data = {'id':body['id']})
+                      data = {'id':body['id'][-8:]})
         event.put()
 
 
 class MessagePage(webapp.RequestHandler):
+    def print_time(self):
+        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
+        
+        
     def post(self):
         body = json.loads(self.request.body)
-        event = Event(kind='message',data={'author':body['author'],
-                                           'text':body['text'],
-                                           'id':body['id']}
-                  )
-        event.put()
-        chat = ChatManager.chat_from_label("default")[0]
-        for client_id in chat.clients:
-            channel.send_message(client_id,
-                                 json.dumps(
-                                     {"author": body['author'],
-                                      "when": datetime.datetime.now().strftime(
-                                          "%b %d %Y %H:%M:%S"),
-                                      "text": body['text']}))
-      
+        chat_key = ndb.Key(urlsafe=body['id'][:-8])
+        message = Message(parent = chat_key,
+                          author = body['author'],
+                          text   = body['text'],
+                          client = body['id'][-8:])
+                          
+        message.put()
 
-class MainPage(webapp.RequestHandler):
+        for client_id in chat.clients:
+            channel.send_message(
+                client_id,
+                json.dumps(
+                    {"clients":len(chat.clients),
+                     "message": [{"author": body['author'],
+                                  "when": self.print_time(),
+                                  "text": body['text']}]
+                 }
+                )
+            )
+
+
+class ConnectionPage(webapp.RequestHandler):
+    def post(self):
+        client_id = self.request.get('from')
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
+        if len(chat) == 0:
+            logging.warning("Creating new default chat")
+            clients = [client_id[-8:]]
+            newchat = ChatManager(label="default",clients=clients)
+            newchat.put()
+            
+        else:
+            chat = chat[0]
+            for client in chat.clients:
+                channel.send_message(
+                    client,
+                    json.dumps(
+                        {"clients":len(chat.clients)+1,
+                         "message": []
+                     }
+                    )
+                )
+                
+            channel.send_message(
+                client_id,
+                json.dumps(
+                    {"clients": len(chat.clients),
+                     "message": Message.query_last_from_chat(10,chat.key.urlsafe())
+                 }
+                )
+            )
+            chat.add_client(client_id[-8:])
+
+class DisconnectionPage(webapp.RequestHandler):
+    def post(self):
+        client_id = self.request.get('from')
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
+        for client in chat.clients:
+            channel.send_message(
+                client,
+                json.dumps(
+                    {"clients":len(chat.clients)-1,
+                     "message": []
+                 }
+                )
+            )
+        chat.remove_client(client[-8:])            
+
+
+class NewChatPage(webapp.RequestHandler):
+    def post(self):
+        newchatinfo = json.loads(self.request.body)
+        print newchatinfo
+
+
+class ChatPage(webapp.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
     def get(self):
-        token = channel.create_channel("default")
+        chat_key = self.request.get('key')
+        chat = ndb.Key(urlsafe = chat_key).get()
+        token = channel.create_channel(chat_key)
         with open(os.path.join(os.path.dirname(__file__), 'index.html')) as f:
             l = f.readlines()
 
         self.response.out.write(''.join(l))
 
 
-class ConnectionPage(webapp.RequestHandler):
-    def post(self):
-        client_id = self.request.get('from')
-        chat = ChatManager.chat_from_label('default')
-
-        if len(chat) == 0:
-            logging.warning("Creating new default chat")
-            clients = [client_id]
-            newchat = ChatManager(label="default",clients=clients)
-            newchat.put()
-       
-        else:
-            chat = chat[0]
-            clients = chat.clients
-            if client_id not in clients:
-                clients.append(client_id)
-            chat.clients = clients
-            chat.put()
-
-
-class DisconnectionPage(webapp.RequestHandler):
-    def post(self):
-        client_id = self.request.get('from')
-        chat = ChatManager.chat_from_label('default')[0]
-        clients = chat.clients
-
-        try:
-            clients.remove(client_id)
-            chat.clients = clients
-            chat.put()
-        except ValueError:
-            pass
-
-
 application = webapp.WSGIApplication([
-    ('/', MainPage),
+    ('/chat', MainPage),
+    ('/new', NewChatPage),
     ('/_ah/channel/connected/',ConnectionPage),
     ('/_ah/channel/disconnected/',DisconnectionPage),
     ('/token', ServeToken),
