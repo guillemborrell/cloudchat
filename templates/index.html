@@ -15,19 +15,19 @@
   </head>
   
   <body ng-app="app">
-    <div class="container-fluid">
+    <div class="container-fluid" ng-controller="MainPage">
       <div class="row">
 	<div class="container">
-	  <h1 class="text-center">Cloudchat</h1>
-	  <div class="col-md-6 col-md-offset-3"  ng-controller="MainPage">
+	  <h1 class="text-center">{{ title }}</h1>
+	  <div class="col-md-6 col-md-offset-3">
 	    <form ng-submit="sendMessage()" class="form-inline" role="form">
 	      <label>Nickname</label>
 	      <input type="text" ng-model="author"><br />
 	      <label>Message</label>
 	      <input type="text" ng-model="message">
-	      <input type="submit" id="submit" value="Submit" />
+	      <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
 	    </form>
-	    <p>Press enter to submit too:</p>
+	    <p>There are {{ connected }} connections.</p>
 	    <div style="height:500px; border:1px solid; overflow:auto">
 	      <table class="table table-hover">
 		<tr  ng-repeat="message in messages">
