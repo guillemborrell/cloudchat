@@ -1,7 +1,3 @@
-#!/usr/bin/python2.4
-
-# pylint: disable-msg=C6310
-
 import datetime
 import logging
 import os
