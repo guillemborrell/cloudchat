@@ -13,14 +13,19 @@
       <div class="row">
 	<div class="container">
 	  <h1 class="text-center">Cloudchat!</h1>
-	  <div class="container">
+	  <div class="col-md-8 col-md-offset-2">
 	    <h2>Active chats</h2>
-	    <table>
+	    <table class="table well">
+	      <tr><th>Name</th><th>Owner</th><th>Active connections</th></tr>
 	      {% for chat in active_chats %}
 	      <tr>
 		<td>
-		  <a href="/chat?key={{ chat.key.urlsafe() }}">{{ chat.name }}</a>
+		  <a href="/chat?key={{ chat.key.urlsafe() }}">
+		    {{ chat.name }}
+		  </a>
 		</td>
+		<td>{{ chat.owner.nickname() }}</td>
+		<td>{{ chat.num_clients() }}</td>
 	      </tr>
 	      {% endfor %}
 	    </table>

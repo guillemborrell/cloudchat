@@ -5,7 +5,7 @@ import random
 import json
 import webapp2
 import jinja2
-from google.appengine.api import channel
+from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 
 
@@ -16,16 +16,21 @@ JINJA_ENVIRONMENT = jinja2.Environment(
     extensions = ['jinja2.ext.autoescape'],
     autoescape = True)
 
+
 class ChatManager(ndb.Model):
     name = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
     clients = ndb.StringProperty(repeated=True)
     active = ndb.BooleanProperty()
+    owner = ndb.UserProperty()
     options = ndb.JsonProperty()
 
     @classmethod
     def query_last(cls,num):
         return cls.query(cls.active == True).order(-cls.date).fetch(num)
+
+    def num_clients(self):
+        return len(self.clients)
 
     def add_client(self, client):
         client_list = self.clients
@@ -180,21 +185,34 @@ class ChatPage(webapp2.RequestHandler):
 
 class NewChatPage(webapp2.RequestHandler):
     def get(self):
-        with open(os.path.join(
-                os.path.dirname(__file__),
-                'templates',
-                'create.html')) as f:
-            l = f.readlines()
+        user = users.get_current_user()
+        if user:
+            with open(os.path.join(
+                    os.path.dirname(__file__),
+                    'templates',
+                    'create.html')) as f:
+                l = f.readlines()
 
-        self.response.out.headers['Content-Type'] = 'text/html'
-        self.response.out.write(''.join(l))
+            self.response.out.headers['Content-Type'] = 'text/html'
+            self.response.out.write(''.join(l))
+
+        else:
+            self.response.out.headers['Content-Type'] = 'text/html'
+            self.response.out.write(
+                '<a href={}>Sign in</a>'.format(
+                    users.create_login_url('/new')
+                )
+            )
+            
 
     def post(self):
+        user = users.get_current_user()
         body = json.loads(self.request.body)
         print body
         chat = ChatManager()
         chat.name = body['name']
         chat.active = True
+        chat.owner = user
         chat.options = {"save": body['save'],
                         "conversations": body['conversations'],
                         "persistent": body['persistent']}
