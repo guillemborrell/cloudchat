@@ -12,16 +12,19 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: .*
+- url: /.*
   script: main.application
 
 inbound_services:
 - channel_presence
 
 libraries:
+- name: webapp2
+  version: latest
+
 - name: jinja2
-  version: "latest"
+  version: latest
 
 - name: numpy
-  version: "latest"
+  version: latest
 

@@ -9,16 +9,19 @@ function getParameterByName(name) {
 
 function CreatePage($scope, $resource) {
     $scope.name = "";
-    $scope.save = "";
-    $scope.conversations = "";
+    $scope.save = false;
+    $scope.persistent = false;
+    $scope.conversations = false;
     $scope.createChat = function() {
 	var oncreateresource = $resource('/new',{}, { post: {method:'POST'}});
 	var data = oncreateresource.post({
 	    "name": $scope.name,
 	    "save": $scope.save,
+	    "persistent": $scope.persistent,
 	    "conversations": $scope.conversations
 	    }
-					)
+					);
+	document.getElementById("form").innerHTML = '<p>Successfully created. Go to the <a href="/">index</a></p>';
     }
 }
 
@@ -46,7 +49,6 @@ function MainPage($scope,$resource) {
 
     $scope.onMessage = function(m) {
         data = JSON.parse(m.data);
-	console.debug(data);
 	messages = data.message
 	$scope.$apply(function () {
 	    $scope.connected = data.clients;

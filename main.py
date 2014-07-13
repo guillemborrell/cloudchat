@@ -3,17 +3,29 @@ import logging
 import os
 import random
 import json
+import webapp2
+import jinja2
 from google.appengine.api import channel
 from google.appengine.ext import ndb
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
 
+
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader = jinja2.FileSystemLoader(
+        os.path.join(os.path.dirname(__file__),
+                     'templates')),
+    extensions = ['jinja2.ext.autoescape'],
+    autoescape = True)
 
 class ChatManager(ndb.Model):
     name = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
     clients = ndb.StringProperty(repeated=True)
+    active = ndb.BooleanProperty()
     options = ndb.JsonProperty()
+
+    @classmethod
+    def query_last(cls,num):
+        return cls.query(cls.active == True).order(-cls.date).fetch(num)
 
     def add_client(self, client):
         client_list = self.clients
@@ -44,7 +56,7 @@ class Event(ndb.Model):
     data = ndb.JsonProperty()
     
 
-class ServeToken(webapp.RequestHandler):
+class ServeToken(webapp2.RequestHandler):
     def get(self):
         ## Check if chat exists.
         chat_key = self.request.get('key')
@@ -56,7 +68,7 @@ class ServeToken(webapp.RequestHandler):
                                             'id':client_id}))
 
 
-class OpenedPage(webapp.RequestHandler):
+class OpenedPage(webapp2.RequestHandler):
     def post(self):
         body = json.loads(self.request.body)
         event = Event(kind = 'connection',
@@ -64,7 +76,7 @@ class OpenedPage(webapp.RequestHandler):
         event.put()
 
 
-class MessagePage(webapp.RequestHandler):
+class MessagePage(webapp2.RequestHandler):
     def print_time(self):
         return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
         
@@ -93,7 +105,7 @@ class MessagePage(webapp.RequestHandler):
             )
 
 
-class ConnectionPage(webapp.RequestHandler):
+class ConnectionPage(webapp2.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
         chat = ndb.Key(urlsafe=client_id[:-8]).get()
@@ -125,7 +137,7 @@ class ConnectionPage(webapp.RequestHandler):
         )
         chat.add_client(client_id)
 
-class DisconnectionPage(webapp.RequestHandler):
+class DisconnectionPage(webapp2.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
         chat = ndb.Key(urlsafe=client_id[:-8]).get()
@@ -140,10 +152,17 @@ class DisconnectionPage(webapp.RequestHandler):
                  }
                 )
             )
+        
+        if len(chat.clients) == 1:
+            # No connections
+            if not chat.options['persistent']:
+                # If chat is not persistent
+                chat.active = False
+
         chat.remove_client(client_id)
 
 
-class ChatPage(webapp.RequestHandler):
+class ChatPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
     def get(self):
         chat_key = self.request.get('key')
@@ -152,14 +171,14 @@ class ChatPage(webapp.RequestHandler):
         with open(os.path.join(
                 os.path.dirname(__file__),
                 'templates',
-                'index.html')) as f:
+                'chat.html')) as f:
             l = f.readlines()
 
         self.response.out.headers['Content-Type'] = 'text/html'
         self.response.out.write(''.join(l))
 
 
-class NewChatPage(webapp.RequestHandler):
+class NewChatPage(webapp2.RequestHandler):
     def get(self):
         with open(os.path.join(
                 os.path.dirname(__file__),
@@ -175,18 +194,25 @@ class NewChatPage(webapp.RequestHandler):
         print body
         chat = ChatManager()
         chat.name = body['name']
+        chat.active = True
         chat.options = {"save": body['save'],
-                        "conversations": body['conversations']}
+                        "conversations": body['conversations'],
+                        "persistent": body['persistent']}
         chat.put()
         
 
-class MainPage(webapp.RequestHandler):
+class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.out.headers['Content-Type'] = 'text/html'
-        self.response.out.write("<html><body><p>Chat in the cloud!</p></body></html>")
+        active_chats = ChatManager.query_last(10)
+
+        template_values = {'active_chats' : active_chats}
+
+        template = JINJA_ENVIRONMENT.get_template('index.html')
+        self.response.out.write(template.render(template_values))
 
 
-application = webapp.WSGIApplication([
+
+application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/chat', ChatPage),
     ('/new', NewChatPage),
@@ -197,8 +223,3 @@ application = webapp.WSGIApplication([
     ('/message', MessagePage)], debug=True)
 
 
-def main():
-    run_wsgi_app(application)
-
-if __name__ == "__main__":
-    main()

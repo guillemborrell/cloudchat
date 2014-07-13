@@ -5,39 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"
 	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <script src='/_ah/channel/jsapi'></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-    <script src="/js/controller.js"></script>
-
-    <title>Cloudchat</title>
+    <title>Cloudchat!</title>
   </head>
   
   <body ng-app="app">
     <div class="container-fluid" ng-controller="MainPage">
       <div class="row">
 	<div class="container">
-	  <h1 class="text-center">{{ title }}</h1>
-	  <div class="col-md-6 col-md-offset-3">
-	    <form ng-submit="sendMessage()" class="form-inline" role="form">
-	      <label>Nickname</label>
-	      <input type="text" ng-model="author"><br />
-	      <label>Message</label>
-	      <input type="text" ng-model="message">
-	      <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
-	    </form>
-	    <p>There are {{ connected }} connections.</p>
-	    <div style="height:500px; border:1px solid; overflow:auto">
-	      <table class="table table-hover">
-		<tr  ng-repeat="message in messages">
-		  <td>
-		    <strong>{{ message.author }},
-		      {{ message.when}}:<br />
-		    </strong> {{ message.text }}</td>
+	  <h1 class="text-center">Cloudchat!</h1>
+	  <div class="container">
+	    <h2>Active chats</h2>
+	    <table>
+	      {% for chat in active_chats %}
+	      <tr>
+		<td>
+		  <a href="/chat?key={{ chat.key.urlsafe() }}">{{ chat.name }}</a>
+		</td>
 	      </tr>
-	      </table>
-	    </div>
+	      {% endfor %}
+	    </table>
 	  </div>
 	</div>
       </div>
