@@ -84,6 +84,7 @@ function MainPage($scope,$resource) {
 		}
 	}
 		     );
+	document.title = $scope.title;
     };
 
     $scope.connect = function(){
