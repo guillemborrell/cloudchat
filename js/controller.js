@@ -12,7 +12,7 @@ function IndexPage($scope, $resource){
     var ongetresource = $resource('/API/chat', {}, {});
     var data = ongetresource.get({}, function(){
 	for (i in data.chats){
-	    $scope.chats.unshift(data.chats[i]);
+	    $scope.chats.push(data.chats[i]);
 	}
     }
 				)
@@ -25,6 +25,15 @@ function UserPage($scope, $resource) {
     $scope.persistent = false;
     $scope.conversations = false;
     $scope.privte = false;
+    $scope.chats = [];
+    var ongetresource = $resource('/API/chat?user=true', {}, {});
+    var data = ongetresource.get({}, function(){
+	for (i in data.chats){
+	    $scope.chats.push(data.chats[i]);
+	}
+    }
+				)
+
     $scope.createChat = function() {
 	var oncreateresource = $resource('/API/chat',{}, { post: {method:'POST'}});
 	var data = oncreateresource.post({

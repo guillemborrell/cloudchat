@@ -1,19 +1,11 @@
 import os
 import json
 import webapp2
-import jinja2
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from models import ChatManager
 from rest import TokenResource, OpenResource, MessageResource, ChatResource
 from rest import ConnectionResource, DisconnectionResource
-
-JINJA_ENVIRONMENT = jinja2.Environment(
-    loader = jinja2.FileSystemLoader(
-        os.path.join(os.path.dirname(__file__),
-                     'templates')),
-    extensions = ['jinja2.ext.autoescape'],
-    autoescape = True)
 
     
 class NewChatPage(webapp2.RequestHandler):
@@ -56,10 +48,15 @@ class ChatPage(webapp2.RequestHandler):
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        active_chats = ChatManager.query_last(10)
-        template_values = {'active_chats' : active_chats}
-        template = JINJA_ENVIRONMENT.get_template('index.html')
-        self.response.out.write(template.render(template_values))
+        with open(os.path.join(
+                os.path.dirname(__file__),
+                'templates',
+                'index.html')) as f:
+            l = f.readlines()
+            
+        self.response.out.headers['Content-Type'] = 'text/html'
+        self.response.out.write(''.join(l))
+
 
 
 

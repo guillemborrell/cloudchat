@@ -1,5 +1,4 @@
-<!
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="utf-8">
@@ -16,26 +15,78 @@ DOCTYPE html>
   
   <body ng-app="app">
     <div class="container-fluid">
+      <ul class="nav nav-tabs" role="tablist">
+	<li><a href="/">Home</a></li>
+	<li class="active"><a href="/new">New</a></li>
+      </ul>
       <div class="row">
 	<div class="container">
 	  <h1 class="text-center">Cloudchat</h1>
-	  <div class="col-md-6 col-md-offset-3"  ng-controller="UserPage">
+	  <div class="col-md-8 col-md-offset-2"  ng-controller="UserPage">
 	    <div id="form">
-	      <form ng-submit="createChat()" class="form-inline" role="form">
-		<label>Chat</label>
-		<input type="text" ng-model="name"><br />
-		<label>Private Chat (Not globally listed)</label>
-		<input type="checkbox" ng-model="privte"><br />
-		<label>Save Messages</label>
-		<input type="checkbox" ng-model="persistent"><br />
-		<label>Alive if no connections left</label>
-		<input type="checkbox" ng-model="save"><br />
-		<label>Allow conversations</label>
-		<input type="checkbox" ng-model="conversations"><br />
-		<label>Create Chat</label>
-		<input type="submit" id="submit" value="Submit" />
+	      <form ng-submit="createChat()" class="form-horizontal"
+		    role="form">
+		<div class="form-group">
+		  <label for="name" class="col-sm-3">Chat name</label>
+		  <div class="col-sm-8">
+		    <input type="text" class="form-control" id="name"  ng-model="name">
+		  </div>
+		</div>
+		<div class="form-group">
+		  <div class="col-md-offset-3">
+		    <div class="checkbox">
+		      <label>
+			<input type="checkbox" ng-model="privte">
+			Private Chat (Not publicly listed).
+		      </label>
+		    </div>
+		    <div class="checkbox">
+		      <label>
+			<input type="checkbox" ng-model="persistent">
+			Keep online after no connection is left.
+		      </label>
+		    </div>
+		    <div class="checkbox">
+		      <label>
+			<input type="checkbox" ng-model="save">
+			Save the messages. (not useful yet)
+		      </label>
+		    </div>
+		    <div class="checkbox">
+		      <label>
+			<input type="checkbox" ng-model="conversations">
+			Allow for private conversations (not supported yet)
+		      </label>
+		    </div>
+		  </div>
+		</div>
+		<div class="form-group">
+		  <div class="col-md-offset-3">
+		    <input type="submit" id="submit" value="Create Chat" />
+		  </div>
+		</div>
 	      </form>
 	    </div>
+	    <h2>Your chats</h2>
+	    <table class="table well">
+	      <tr><th>Name</th>
+		<th>Time created</th>
+		<th>Private</th>
+		<th>Persistent</th>
+		<th>Connected</th></tr>
+	      <tr ng-repeat="chat in chats">
+		<td>
+		  <a href="/chat?key={{ chat.key }}">
+		    {{ chat.name }}
+		  </a>
+		</td>
+		<td>{{ chat.date }}</td>
+		<td>{{ chat.private }}</td>
+		<td>{{ chat.persistent }}</td>
+		<td>{{ chat.num_clients }}</td>
+	      </tr>
+	    </table>
+
 	  </div>
 	</div>
       </div>

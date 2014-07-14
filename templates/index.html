@@ -5,11 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet"
 	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
+    <script src="/js/controller.js"></script>
     <title>Cloudchat!</title>
   </head>
   
   <body ng-app="app">
-    <div class="container-fluid" ng-controller="MainPage">
+    <div class="container-fluid" ng-controller="IndexPage">
+      <ul class="nav nav-tabs" role="tablist">
+	<li class="active"><a href="/">Home</a></li>
+	<li><a href="/new">New</a></li>
+      </ul>
       <div class="row">
 	<div class="container">
 	  <h1 class="text-center">Cloudchat!</h1>
@@ -17,17 +24,15 @@
 	    <h2>Active chats</h2>
 	    <table class="table well">
 	      <tr><th>Name</th><th>Owner</th><th>Active connections</th></tr>
-	      {% for chat in active_chats %}
-	      <tr>
+	      <tr ng-repeat="chat in chats">
 		<td>
-		  <a href="/chat?key={{ chat.key.urlsafe() }}">
+		  <a href="/chat?key={{ chat.key }}">
 		    {{ chat.name }}
 		  </a>
 		</td>
-		<td>{{ chat.owner.nickname() }}</td>
-		<td>{{ chat.num_clients() }}</td>
+		<td>{{ chat.owner }}</td>
+		<td>{{ chat.num_clients }}</td>
 	      </tr>
-	      {% endfor %}
 	    </table>
 	  </div>
 	</div>

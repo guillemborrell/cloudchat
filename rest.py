@@ -128,13 +128,14 @@ class ChatResource(webapp2.RequestHandler):
         else:
             chats = ChatManager.query_public(10)
 
-        print chats
         chat_list = list()
         for c in chats:
             chat_list.append(
                 {"name": c.name,
                  "date": c.date.strftime("%b %d %Y %H:%M:%S"),
                  "owner": c.owner.nickname(),
+                 "key": c.key.urlsafe(),
+                 "persistent": c.options['persistent'],
                  "num_clients": c.num_clients(),
                  "private": c.private}
             )
@@ -146,7 +147,6 @@ class ChatResource(webapp2.RequestHandler):
     def post(self):
         user = users.get_current_user()
         body = json.loads(self.request.body)
-        print body
         chat = ChatManager()
         chat.name = body['name']
         chat.active = True
