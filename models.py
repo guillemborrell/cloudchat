@@ -9,6 +9,17 @@ class ChatManager(ndb.Model):
     options = ndb.JsonProperty()
 
     @classmethod
+    def query_active(cls,num):
+        return cls.query(cls.active == True).order(-cls.date).fetch(num)
+
+    @classmethod
+    def query_active_user(cls,num,user):
+        return cls.query(
+            cls.active == True).query(
+                cls.user.email() == user).order(
+                    -cls.date).fetch(num)
+
+    @classmethod
     def query_last(cls,num):
         return cls.query(cls.active == True).order(-cls.date).fetch(num)
 
