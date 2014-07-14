@@ -17,7 +17,7 @@ class ChatManager(ndb.Model):
     def query_active_user(cls,num,user):
         return cls.query(
             cls.active == True).query(
-                cls.user.email() = user).order(
+                cls.user.email() == user).order(
                     -cls.date).fetch(num)
 
     @classmethod
