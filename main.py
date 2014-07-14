@@ -22,12 +22,8 @@ class NewChatPage(webapp2.RequestHandler):
             self.response.out.write(''.join(l))
 
         else:
-            self.response.out.headers['Content-Type'] = 'text/html'
-            self.response.out.write(
-                '<html><body><a href={}>Sign in</a></body></html>'.format(
-                    users.create_login_url('/new')
-                )
-            )
+            webapp2.redirect(users.create_login_url('/new'))
+
             
 
 class ChatPage(webapp2.RequestHandler):
