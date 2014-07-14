@@ -5,7 +5,7 @@ import jinja2
 from google.appengine.api import users
 from google.appengine.ext import ndb
 from models import ChatManager
-from rest import TokenResource, OpenResource, MessageResource
+from rest import TokenResource, OpenResource, MessageResource, ChatResource
 from rest import ConnectionResource, DisconnectionResource
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -32,26 +32,12 @@ class NewChatPage(webapp2.RequestHandler):
         else:
             self.response.out.headers['Content-Type'] = 'text/html'
             self.response.out.write(
-                '<a href={}>Sign in</a>'.format(
+                '<html><body><a href={}>Sign in</a></body></html>'.format(
                     users.create_login_url('/new')
                 )
             )
             
 
-    def post(self):
-        user = users.get_current_user()
-        body = json.loads(self.request.body)
-        print body
-        chat = ChatManager()
-        chat.name = body['name']
-        chat.active = True
-        chat.owner = user
-        chat.options = {"save": body['save'],
-                        "conversations": body['conversations'],
-                        "persistent": body['persistent']}
-        chat.put()
-
-        
 class ChatPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
     def get(self):
@@ -83,8 +69,9 @@ application = webapp2.WSGIApplication([
     ('/new', NewChatPage),
     ('/_ah/channel/connected/',ConnectionResource),
     ('/_ah/channel/disconnected/',DisconnectionResource),
-    ('/token', TokenResource),
-    ('/opened', OpenResource),
-    ('/message', MessageResource)], debug=True)
+    ('/API/token', TokenResource),
+    ('/API/opened', OpenResource),
+    ('/API/message', MessageResource),
+    ('/API/chat', ChatResource)], debug=True)
 
 

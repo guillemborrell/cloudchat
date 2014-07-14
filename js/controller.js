@@ -7,17 +7,31 @@ function getParameterByName(name) {
     return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
 
-function CreatePage($scope, $resource) {
+function IndexPage($scope, $resource){
+    $scope.chats = [];
+    var ongetresource = $resource('/API/chat', {}, {});
+    var data = ongetresource.get({}, function(){
+	for (i in data.chats){
+	    $scope.chats.unshift(data.chats[i]);
+	}
+    }
+				)
+}
+
+
+function UserPage($scope, $resource) {
     $scope.name = "";
     $scope.save = false;
     $scope.persistent = false;
     $scope.conversations = false;
+    $scope.privte = false;
     $scope.createChat = function() {
-	var oncreateresource = $resource('/new',{}, { post: {method:'POST'}});
+	var oncreateresource = $resource('/API/chat',{}, { post: {method:'POST'}});
 	var data = oncreateresource.post({
 	    "name": $scope.name,
 	    "save": $scope.save,
 	    "persistent": $scope.persistent,
+	    "private": $scope.privte,
 	    "conversations": $scope.conversations
 	    }
 					);
@@ -35,13 +49,13 @@ function MainPage($scope,$resource) {
     $scope.messages = [];
 
     $scope.onOpened = function() {
-	var onopenresource = $resource('/opened',{},{ post: {method:'POST'}});
+	var onopenresource = $resource('/API/opened',{},{ post: {method:'POST'}});
 	var data = onopenresource.post({
 	    'id': $scope.id});
     };
 
     $scope.onClosed = function() {
-	var onopenresource = $resource('/closed',{},{ post: {method:'POST'}});
+	var onopenresource = $resource('/API/closed',{},{ post: {method:'POST'}});
 	var data = onopenresource.post({
 	    'id': $scope.id});
     };
@@ -76,7 +90,7 @@ function MainPage($scope,$resource) {
 	$scope.socket.onmessage = $scope.onMessage;
     }
 
-    var tokenresource = $resource("/token?key=:q");
+    var tokenresource = $resource("/API/token?key=:q");
     var data = tokenresource.get({q:getParameterByName('key')}, function(){
     	$scope.token = data.token;
 	$scope.id = data.id;
@@ -84,7 +98,7 @@ function MainPage($scope,$resource) {
     });
 
     $scope.sendMessage = function(){
-	var messageresource = $resource('/message',{},{ post: {method:'POST'}});
+	var messageresource = $resource('/API/message',{},{ post: {method:'POST'}});
 	var data = messageresource.post({
 	    'id': $scope.id,
 	    'author': $scope.author,

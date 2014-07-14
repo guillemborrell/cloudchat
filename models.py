@@ -4,19 +4,21 @@ class ChatManager(ndb.Model):
     name = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
     clients = ndb.StringProperty(repeated=True)
+    private = ndb.BooleanProperty()
     active = ndb.BooleanProperty()
     owner = ndb.UserProperty()
     options = ndb.JsonProperty()
 
     @classmethod
-    def query_active(cls,num):
-        return cls.query(cls.active == True).order(-cls.date).fetch(num)
+    def query_public(cls,num):
+        return cls.query(
+            cls.active == True, cls.private == False).order(
+                    -cls.date).fetch(num)
 
     @classmethod
-    def query_active_user(cls,num,user):
+    def query_user(cls,user,num):
         return cls.query(
-            cls.active == True).query(
-                cls.user.email() == user).order(
+            cls.active == True, cls.owner == user).order(
                     -cls.date).fetch(num)
 
     @classmethod

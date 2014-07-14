@@ -3,7 +3,7 @@ import os
 import random
 import json
 import webapp2
-from google.appengine.api import channel
+from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 from models import Event, Message, ChatManager
 
@@ -17,6 +17,8 @@ class TokenResource(webapp2.RequestHandler):
         self.response.out.headers['Content-Type'] = 'application/json'
         self.response.out.write(json.dumps({'token':token,
                                             'id':client_id}))
+
+
 class OpenResource(webapp2.RequestHandler):
     def post(self):
         body = json.loads(self.request.body)
@@ -110,4 +112,48 @@ class DisconnectionResource(webapp2.RequestHandler):
 
         chat.remove_client(client_id)
 
+
+class ChatResource(webapp2.RequestHandler):
+    def print_time(self):
+        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S") 
+
+    def get(self):
+        if self.request.get('user'):
+            user = users.get_current_user()
+            if user:
+                chats = ChatManager.query_user(user,10)
+            else:
+                pass
+
+        else:
+            chats = ChatManager.query_public(10)
+
+        print chats
+        chat_list = list()
+        for c in chats:
+            chat_list.append(
+                {"name": c.name,
+                 "date": c.date.strftime("%b %d %Y %H:%M:%S"),
+                 "owner": c.owner.nickname(),
+                 "num_clients": c.num_clients(),
+                 "private": c.private}
+            )
+
+        self.response.out.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps({'chats': chat_list}))
+
+
+    def post(self):
+        user = users.get_current_user()
+        body = json.loads(self.request.body)
+        print body
+        chat = ChatManager()
+        chat.name = body['name']
+        chat.active = True
+        chat.private = body['private']
+        chat.owner = user
+        chat.options = {"save": body['save'],
+                        "conversations": body['conversations'],
+                        "persistent": body['persistent']}
+        chat.put()
 
