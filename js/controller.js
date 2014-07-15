@@ -44,7 +44,7 @@ function UserPage($scope, $resource) {
 	    "conversations": $scope.conversations
 	    }
 					);
-	document.getElementById("form").innerHTML = '<p>Successfully created. Go to the <a href="/">index</a></p>';
+	document.getElementById("form").innerHTML = '<p>Successfully created. <a href="/new">Refresh</a> the page.</p>';
     }
 }
 

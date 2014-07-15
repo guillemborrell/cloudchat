@@ -1,6 +1,5 @@
 import datetime
 import os
-import random
 import json
 import webapp2
 from google.appengine.api import channel, users
