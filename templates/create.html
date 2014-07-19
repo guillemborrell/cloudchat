@@ -9,7 +9,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
     <script src="/js/controller.js"></script>
-
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <title>Cloudchat</title>
   </head>
   
@@ -17,13 +17,13 @@
     <div class="container-fluid">
       <ul class="nav nav-tabs" role="tablist">
 	<li><a href="/">Home</a></li>
-	<li class="active"><a href="/new">New</a></li>
+	<li class="active"><a href="/new">Your chats</a></li>
       </ul>
       <div class="row">
-	<div class="container">
+	<div class="container"  ng-controller="UserPage">
 	  <h1 class="text-center">Cloudchat</h1>
-	  <div class="col-md-8 col-md-offset-2"  ng-controller="UserPage">
-	    <div id="form">
+	  <div class="col-md-8 col-md-offset-2">
+	    <div id="form" class="well">
 	      <form ng-submit="createChat()" class="form-horizontal"
 		    role="form">
 		<div class="form-group">
@@ -43,19 +43,19 @@
 		    <div class="checkbox">
 		      <label>
 			<input type="checkbox" ng-model="persistent">
-			Keep online after no connection is left.
+			Persistent (keep online after no connection is left).
 		      </label>
 		    </div>
 		    <div class="checkbox">
 		      <label>
 			<input type="checkbox" ng-model="save">
-			Save the messages. (not useful yet)
+			Save the messages.
 		      </label>
 		    </div>
 		    <div class="checkbox">
 		      <label>
 			<input type="checkbox" ng-model="conversations">
-			Allow for private conversations (not supported yet)
+			Allow for private conversations.
 		      </label>
 		    </div>
 		  </div>
@@ -67,13 +67,18 @@
 		</div>
 	      </form>
 	    </div>
+	  </div>
+	  <div class="col-md-12">
 	    <h2>Your chats</h2>
 	    <table class="table well">
 	      <tr><th>Name</th>
 		<th>Time created</th>
 		<th>Private</th>
 		<th>Persistent</th>
-		<th>Connected</th></tr>
+		<th>Allow conversations</th>
+		<th>Connected</th>
+		<th>Download messages.</th>
+	      </tr>
 	      <tr ng-repeat="chat in chats">
 		<td>
 		  <a href="/chat?key={{ chat.key }}">
@@ -83,7 +88,17 @@
 		<td>{{ chat.date }}</td>
 		<td>{{ chat.private }}</td>
 		<td>{{ chat.persistent }}</td>
+		<td>{{ chat.conversations }}</td>
 		<td>{{ chat.num_clients }}</td>
+		<td ng-if="chat.save == true">
+		  <a href="/API/download?key={{ chat.key }}"
+		     download="messages.json">
+		    <i class="fa fa-download"></i>
+		  </a>
+		</td>
+		<td ng-if="chat.save == false">
+		  <i class="fa fa-ban"></i>
+		</td>
 	      </tr>
 	    </table>
 

@@ -16,7 +16,7 @@
     <div class="container-fluid" ng-controller="MainPage">
       <ul class="nav nav-tabs" role="tablist">
 	<li><a href="/">Home</a></li>
-	<li><a href="/new">New</a></li>
+	<li><a href="/new">Your chats</a></li>
       </ul>
       <div class="row">
 	<div class="container">
@@ -31,13 +31,26 @@
 	    </form>
 	    <p>There are {{ connected }} connections.</p>
 	    <div style="height:500px; border:1px solid; overflow:auto">
-	      <table class="table table-hover">
+	      <table class="table table-striped">
 		<tr  ng-repeat="message in messages">
 		  <td>
-		    <strong>{{ message.author }},
-		      {{ message.when}}:<br />
-		    </strong> {{ message.text }}</td>
-	      </tr>
+		    <span ng-if="conversations == true">
+		      <button type="submit"
+			      class="btn btn-primary"
+			      ng-click="invite(message)">
+			{{ message.author}}
+		      </button>
+		    </span>
+		    <span ng-if="conversations == false">
+		      <strong>
+			{{ message.author}}
+		      </strong>
+		    </span>
+		  </td>
+		  <td>
+		    {{ message.when}}: {{ message.text }}</p>
+		  </td>
+		</tr>
 	      </table>
 	    </div>
 	  </div>

@@ -56,6 +56,7 @@ function MainPage($scope,$resource) {
     $scope.title = "Cloud Chat";
     $scope.message = "";
     $scope.messages = [];
+    $scope.conversations = false;
 
     $scope.onOpened = function() {
 	var onopenresource = $resource('/API/opened',{},{ post: {method:'POST'}});
@@ -104,6 +105,7 @@ function MainPage($scope,$resource) {
     var data = tokenresource.get({q:getParameterByName('key')}, function(){
     	$scope.token = data.token;
 	$scope.id = data.id;
+	$scope.conversations = data.conversations;
 	$scope.connect();
     });
 

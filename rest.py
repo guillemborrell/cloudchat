@@ -14,8 +14,25 @@ class TokenResource(webapp2.RequestHandler):
         client_id = ''.join([chat.key.urlsafe(),os.urandom(4).encode('hex')])
         token = channel.create_channel(client_id)
         self.response.out.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps({'token':token,
-                                            'id':client_id}))
+        self.response.out.write(
+            json.dumps(
+                {'token':token,
+                 'id':client_id,
+                 'conversations':chat.options['conversations']
+             }
+            )
+        )
+
+
+class DownloadResource(webapp2.RequestHandler):
+    def get(self):
+        chat_key = self.request.get('key')
+        self.response.out.headers['Content-Type'] = 'application/json'
+        self.response.out.write(
+            json.dumps(
+                Message.query_all_from_chat(chat_key)
+            )
+        )
 
 
 class OpenResource(webapp2.RequestHandler):
@@ -71,7 +88,7 @@ class ConnectionResource(webapp2.RequestHandler):
                 )
             )
 
-        messages = Message.query_last_from_chat(10,chat.key.urlsafe())
+        messages = Message.query_last_from_chat(chat.key.urlsafe())
         message_list = [{"author": m.author,
                          "when": m.date.strftime("%b %d %Y %H:%M:%S"),
                          "text": m.text} for m in messages]
@@ -135,6 +152,8 @@ class ChatResource(webapp2.RequestHandler):
                  "owner": c.owner.nickname(),
                  "key": c.key.urlsafe(),
                  "persistent": c.options['persistent'],
+                 "save": c.options['save'],
+                 "conversations": c.options['conversations'],
                  "num_clients": c.num_clients(),
                  "private": c.private}
             )

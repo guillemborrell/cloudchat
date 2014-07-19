@@ -46,9 +46,31 @@ class Message(ndb.Model):
     text = ndb.StringProperty()
 
     @classmethod
-    def query_last_from_chat(cls,num,chat_key):
+    def query_last_from_chat(cls,chat_key):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
         return query.order(-cls.date).fetch(10)
+
+
+    @classmethod
+    def query_all_from_chat(cls,chat_key):
+        messages = list()
+        more = True
+        curs = None
+
+        while more:
+            partial, curs, more = cls.query(
+            ).order(
+                -cls.date).fetch_page(
+                    50, start_cursor = curs)
+
+            for m in partial:
+                messages.append(
+                    {'author': m.author,
+                     'date': m.date.isoformat(),
+                     'text': m.text}
+                    )
+
+        return messages
 
 
 class Event(ndb.Model):
