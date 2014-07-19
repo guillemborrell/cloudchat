@@ -24,9 +24,9 @@
 	  <div class="col-md-6 col-md-offset-3">
 	    <form ng-submit="sendMessage()" class="form-inline" role="form">
 	      <label>Nickname</label>
-	      <input type="text" ng-model="author"><br />
+	      <input type="text" ng-model="author" required><br />
 	      <label>Message</label>
-	      <input type="text" ng-model="message">
+	      <input type="text" ng-model="message" required>
 	      <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
 	    </form>
 	    <p>There are {{ connected }} connections.</p>

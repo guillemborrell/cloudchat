@@ -1,9 +1,6 @@
 import os
-import json
 import webapp2
 from google.appengine.api import users
-from google.appengine.ext import ndb
-from models import ChatManager
 from rest import TokenResource, OpenResource, MessageResource, ChatResource
 from rest import ConnectionResource, DisconnectionResource
 
@@ -33,9 +30,6 @@ class NewChatPage(webapp2.RequestHandler):
 class ChatPage(webapp2.RequestHandler):
     """The main UI page, renders the 'index.html' template."""
     def get(self):
-        chat_key = self.request.get('key')
-        chat = ndb.Key(urlsafe = chat_key).get()
-
         with open(os.path.join(
                 os.path.dirname(__file__),
                 'templates',
@@ -56,8 +50,6 @@ class MainPage(webapp2.RequestHandler):
             
         self.response.out.headers['Content-Type'] = 'text/html'
         self.response.out.write(''.join(l))
-
-
 
 
 application = webapp2.WSGIApplication([
