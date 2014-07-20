@@ -40,6 +40,30 @@ class ChatPage(webapp2.RequestHandler):
         self.response.out.write(''.join(l))
 
 
+class EmbedPage(webapp2.RequestHandler):
+    def get(self):
+        with open(os.path.join(
+                os.path.dirname(__file__),
+                'templates',
+                'chat.html')) as f:
+            l = f.readlines()
+
+        self.response.out.headers['Content-Type'] = 'text/html'
+        self.response.out.write(''.join(l))
+
+
+class FaqPage(webapp2.RequestHandler):
+    def get(self):
+        with open(os.path.join(
+                os.path.dirname(__file__),
+                'templates',
+                'faq.html')) as f:
+            l = f.readlines()
+            
+        self.response.out.headers['Content-Type'] = 'text/html'
+        self.response.out.write(''.join(l))
+
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
         with open(os.path.join(
@@ -56,6 +80,8 @@ application = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/chat', ChatPage),
     ('/new', NewChatPage),
+    ('/embed', EmbedPage),
+    ('/faq', FaqPage),
     ('/_ah/channel/connected/',ConnectionResource),
     ('/_ah/channel/disconnected/',DisconnectionResource),
     ('/API/token', TokenResource),

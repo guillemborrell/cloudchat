@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
+
+    <script src="/js/controller.js"></script>
+    <title>Cloudchat!</title>
+  </head>
+  
+  <body ng-app="app">
+    <div class="container-fluid" ng-controller="IndexPage">
+      <ul class="nav nav-tabs" role="tablist">
+	<li><a href="/">Home</a></li>
+	<li><a href="/new">Your chats</a></li>
+	<li class="active"><a href="/faq">FAQ</a></li>
+      </ul>
+      <div class="row">
+	<div class="container">
+	  <h1 class="text-center">Cloudchat!</h1>
+	  <div class="col-md-8 col-md-offset-2">
+	    <h2>FAQ</h2>
+	    <p><strong>What is this?</strong></p>
+	    <p>This is a feature-complete anonymous chat application.</p>
+	    <br />
+	    <p><strong>Why are you doing this?</strong></p>
+	    <p>To make a point about how high performance scalable web
+	    applications should be implemented in PAAS. It uses Google
+	    Appengine, but the ideas applied here can be useful in many
+	    other cases.</p>
+	    <br />
+	    <p><strong>Where is the source code?</strong></p>
+	    <p>In <a href="https://github.com/guillemborrell/aerochat">this</a>
+	    github repository.</p>
+	    <br />
+	    <p><strong>But there are rough edges everywhere!</strong></p>
+	    <p>I know. I did this for fun, and I don't care about your
+	      opinion unless you are willing to help.</p>
+	    <br />
+	    <p><strong>How do I create a chat?</strong></p>
+	    <p>Go to the <em>Your Chats</em> tab, and log in with your Google
+	      account. You have to give a name to the chat, and configure it a
+	      little.</p>
+
+	    <p>If you make the chat private, it won't be listed in the home
+	      page, but it will be listed in <em>Your Chats</em> page, and
+	      anyone can access it if you send them the link. Chats that
+	      are <strong>not</strong> persistent are deactivated after all
+	      connections to it are closed. By deactivating I mean that they
+	      are no longer listed anywhere, but you can still find them with
+	      the link. Have that in mind if you care about your privacy. You
+	      can ask the application to save all the messages of the chat,
+	      and you will be able to download them anytime in JSON. Finally,
+	      you can activate the support for private rooms, and any user of
+	      the chat will be able to send private room invitations to any
+	      other user.</p>  <br />
+	    <p><strong>If it runs on Google Appengine, who is paying for
+		this?</strong>
+	    </p> 
+	    <p>Me. But It's not an expensive application to run. Really,
+	      and <strong>that</strong> was the point. You can build
+	      applications that handle lots of concurrent connections and
+	      traffic, and spend less than 1$/day.  If I ever get tired of
+	      supporting this, I will leave it with the &quot;free&quot;
+	      account, that handles about 6K messages/day.</p>
+	    <br />
+	    <p><strong>You have my attention now. How does it work?</strong></p>
+	    <p></p>
+	    <p>It's just an example on how to implement soft-real-time
+	      application in a PAAS. If you have an efficient messaging
+	      platform, it's that easy.</p>
+	    <p>The messages are sent
+	      through <a href="https://developers.google.com/appengine/docs/python/channel/">
+		appengine's channels
+	      </a>. Any other efficient asynchronous transport could be used,
+	      but I don't have the time to configure and deploy stuff. The
+	      browser is used as a client to the last consequence, since all
+	      the data of each page is sent to the AngularJS templating engine
+	      asynchronously with the requests library. This scheme has an
+	      additional benefit. The application gets feature-complete REST
+	      API, and anyone can write a chat client, as long as the client
+	      is in Javascript and can load the channels.</p>
+	    <p>If you look at the code, there are some examples on how the
+	      Google's key-value database is used efficiently thanks to a good
+	      application design, and how the information that goes through the
+	      wire is minimized all the time.</p>
+	    <p>There are some performance-wise technical decisions, but if you
+	    know me in the Real World&reg;, high performance computing is what
+	    I do for a living.</p>  <br />
+	  </div>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
