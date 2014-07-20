@@ -93,10 +93,12 @@
 		<td>{{ chat.conversations }}</td>
 		<td>{{ chat.num_clients }}</td>
 		<td ng-if="chat.save == true">
-		  <a href="/API/download?key={{ chat.key }}"
-		     download="messages.json">
-		    <i class="fa fa-download"></i>
-		  </a>
+		  <div id="download" ng-click="replaceSave(chat)">
+		    <a href="/API/download?key={{ chat.key }}"
+		       download="messages.json">
+		      <i class="fa fa-download"></i>
+		    </a>
+		  </div>
 		</td>
 		<td ng-if="chat.save == false">
 		  <i class="fa fa-ban"></i>

@@ -33,6 +33,9 @@ function UserPage($scope, $resource) {
 	}
     }
 				)
+    $scope.replaceSave = function(chat) {
+	chat.save = false;
+    }
 
     $scope.createChat = function() {
 	var oncreateresource = $resource('/API/chat',{}, { post: {method:'POST'}});
