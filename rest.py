@@ -18,7 +18,7 @@ def prettify(message):
             )
         if 'cloudchatroom.appspot.com' in w:
             newmessage.append(
-                '<a href="{}" target="_blank">w[:20]...</a>'.format(w)
+                '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
                 )
         else:
             newmessage.append(w)
