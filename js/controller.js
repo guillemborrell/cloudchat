@@ -1,4 +1,4 @@
-angular.module('app', ['ngResource']);
+angular.module('app', ['ngResource','ngSanitize']);
 
 function getParameterByName(name) {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
@@ -48,7 +48,7 @@ function UserPage($scope, $resource) {
     }
 }
 
-function MainPage($scope,$resource) {
+function MainPage($scope,$resource,$sce) {
     $scope.token = "";
     $scope.id = "";
     $scope.author = "";
@@ -57,7 +57,16 @@ function MainPage($scope,$resource) {
     $scope.message = "";
     $scope.messages = [];
     $scope.conversations = false;
-
+    $scope.invite = function(guest){
+	if ($scope.id != guest){
+	    if (guest != '0'){
+		var oninviteresource = $resource('/API/invite');
+		var data = oninviteresource.save({'from': $scope.id,
+						  'author': $scope.author,
+						  'to': guest});
+	    }
+	}
+    }
     $scope.onOpened = function() {
 	var onopenresource = $resource('/API/opened',{},{ post: {method:'POST'}});
 	var data = onopenresource.post({
@@ -78,9 +87,11 @@ function MainPage($scope,$resource) {
 	    $scope.connected = data.clients;
 	    $scope.title = data.name;
 	    for (i in messages){
-		$scope.messages.unshift({"author": messages[i].author,
-					 "when": messages[i].when,
-					 "text": messages[i].text}
+		$scope.messages.unshift(
+		    {"author": messages[i].author,
+		     "when": messages[i].when,
+		     "id": messages[i].id,
+		     "text": $sce.trustAsHtml(messages[i].text)}
 			    );
 		}
 	}

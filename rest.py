@@ -2,9 +2,25 @@ import datetime
 import os
 import json
 import webapp2
+import cgi
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 from models import Event, Message, ChatManager
+
+def prettify(message):
+    image_formats = ['png','gif','jpg','jpeg']
+    video_formats = ['youtube']
+    newmessage = list()
+    for w in message.split():
+        if any([fmt in w for fmt in image_formats]):
+            newmessage.append(
+                '<img src="{}" class="img-responsive">'.format(w)
+            )
+        else:
+            newmessage.append(w)
+
+    return ' '.join(newmessage)
+
 
 class TokenResource(webapp2.RequestHandler):
     def get(self):
@@ -43,6 +59,76 @@ class OpenResource(webapp2.RequestHandler):
         event.put()
 
 
+class InviteResource(webapp2.RequestHandler):
+    def print_time(self):
+        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
+
+    def post(self):
+        body = json.loads(self.request.body)
+        client_id = body['from']
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
+        if body['to'] in chat.clients:
+            newchat = ChatManager()
+            newchat.name = 'Private'
+            newchat.active = True
+            newchat.private = True
+            newchat.owner = users.User("anonymous@none.com")
+            newchat.options = {"save": False,
+                            "conversations": False,
+                            "persistent": False}
+            newchat_key = chat.put()
+
+            channel.send_message(
+                body['from'],
+                json.dumps(
+                    {"clients":len(chat.clients),
+                     "name": chat.name,
+                     "message": [
+                         {"author": 'ADMIN',
+                          "id": '0',
+                          "when": self.print_time(),
+                          "text": 'You have sent a private <a target="_blank" href="/chat?key={}">room</a>'.format(newchat_key.urlsafe())
+                      }
+                     ]
+                 }
+                )
+            )
+
+            channel.send_message(
+                body['to'],
+                json.dumps(
+                    {"clients":len(chat.clients),
+                     "name": chat.name,
+                     "message": [
+                         {"author": 'ADMIN',
+                          "id": '0',
+                          "when": self.print_time(),
+                          "text": 'You have been invited to a private <a target="_blank" href="/chat?key={}">room</a> by {}'.format(newchat_key.urlsafe(),body['author'])
+                      }
+                     ]
+                 }
+                )
+            )
+
+
+        else:
+            channel.send_message(
+                body['from'],
+                json.dumps(
+                    {"clients":len(chat.clients),
+                     "name": chat.name,
+                     "message": [{"author": 'ADMIN',
+                                  "id": '0',
+                                  "when": self.print_time(),
+                                  "text": 'This user is no longer connected'
+                              }]
+                 }
+                )
+            )
+            
+
+
 class MessageResource(webapp2.RequestHandler):
     def print_time(self):
         return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
@@ -65,8 +151,10 @@ class MessageResource(webapp2.RequestHandler):
                     {"clients":len(chat.clients),
                      "name": chat.name,
                      "message": [{"author": body['author'],
+                                  "id": body['id'],
                                   "when": self.print_time(),
-                                  "text": body['text']}]
+                                  "text": prettify(cgi.escape(body['text']))
+                              }]
                  }
                 )
             )
@@ -90,8 +178,9 @@ class ConnectionResource(webapp2.RequestHandler):
 
         messages = Message.query_last_from_chat(chat.key.urlsafe())
         message_list = [{"author": m.author,
+                         "id": ''.join([client_id[:-8],m.client]),
                          "when": m.date.strftime("%b %d %Y %H:%M:%S"),
-                         "text": m.text} for m in messages]
+                         "text": prettify(cgi.escape(m.text))} for m in messages]
 
         channel.send_message(
             client_id,

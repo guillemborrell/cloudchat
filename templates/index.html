@@ -7,6 +7,8 @@
 	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
+
     <script src="/js/controller.js"></script>
     <title>Cloudchat!</title>
   </head>
@@ -21,7 +23,7 @@
 	<div class="container">
 	  <h1 class="text-center">Cloudchat!</h1>
 	  <div class="col-md-8 col-md-offset-2">
-	    <h2>Active chats</h2>
+	    <h2>Active public chats</h2>
 	    <table class="table well">
 	      <tr><th>Name</th><th>Owner</th><th>Active connections</th></tr>
 	      <tr ng-repeat="chat in chats">
