@@ -10,6 +10,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <script type="text/javascript" src="/js/controller.js"></script>
     <title>Cloudchat</title>
   </head>
@@ -25,13 +26,19 @@
 	<h1 class="text-center">{{ title }}</h1>
 	<div class="col-md-6 col-md-offset-3">
 	  <form ng-submit="sendMessage()" class="form-inline" role="form">
-	    <label>Nickname</label>
-	    <input type="text" ng-model="author" required><br />
-	    <label>Message</label>
-	    <input type="text" ng-model="message" required>
-	    <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
+	    <div class="form-group">
+	      <input 
+		 class="form-control" type="text" ng-model="author"
+		 placeholder="Nickname" required >
+	      <input
+		 class="form-control" type="text" ng-model="message"
+		 placeholder="Message (press ↵ to send)" required > 
+	      <input type="submit" class="btn btn-default"
+		     id="submit" value="Submit" />
+	      <i class="fa fa-users"></i> &#215; {{
+	      connected }}
+	    </div>
 	  </form>
-	  <p>There are {{ connected }} connections.</p>
 	  <div class="row well">
 	    <div ng-repeat="message in messages">
 	      <div class="col-md-12">
