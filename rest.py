@@ -16,6 +16,10 @@ def prettify(message):
             newmessage.append(
                 '<img src="{}" class="img-responsive">'.format(w)
             )
+        if 'cloudchatroom.appspot.com' in w:
+            newmessage.append(
+                '<a href="{}" target="_blank">w[:20]...</a>'.format(w)
+                )
         else:
             newmessage.append(w)
 
