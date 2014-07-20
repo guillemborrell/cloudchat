@@ -9,7 +9,7 @@ from models import Event, Message, ChatManager
 
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
-    video_formats = ['.webm']
+    video_formats = ['.mp4','.ogg','.webm']
     newmessage = list()
     for w in message.split():
         if any([fmt in w for fmt in video_formats]):
