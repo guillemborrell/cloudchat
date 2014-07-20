@@ -9,12 +9,16 @@ from models import Event, Message, ChatManager
 
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
-    video_formats = ['youtube']
+    video_formats = ['.webm']
     newmessage = list()
     for w in message.split():
         if any([fmt in w for fmt in image_formats]):
             newmessage.append(
                 '<img src="{}" class="img-responsive">'.format(w)
+            )
+        if any([fmt in w for fmt in video_formats]):
+            newmessage.append(
+                '<video src="{}" controls></video>'.format(w)
             )
         if 'cloudchatroom.appspot.com' in w:
             newmessage.append(
