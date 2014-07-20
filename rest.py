@@ -8,7 +8,7 @@ from google.appengine.ext import ndb
 from models import Event, Message, ChatManager
 
 def prettify(message):
-    image_formats = ['png','gif','jpg','jpeg']
+    image_formats = ['.png','.gif','.jpg','.jpeg']
     video_formats = ['youtube']
     newmessage = list()
     for w in message.split():
