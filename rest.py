@@ -16,11 +16,11 @@ def prettify(message):
             newmessage.append(
                 '<img src="{}" class="img-responsive">'.format(w)
             )
-        if any([fmt in w for fmt in video_formats]):
+        elif any([fmt in w for fmt in video_formats]):
             newmessage.append(
                 '<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
             )
-        if 'cloudchatroom.appspot.com' in w:
+        elif 'cloudchatroom.appspot.com' in w:
             newmessage.append(
                 '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
                 )
