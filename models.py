@@ -59,9 +59,9 @@ class Message(ndb.Model):
 
         while more:
             partial, curs, more = cls.query(
-            ).order(
-                -cls.date).fetch_page(
-                    50, start_cursor = curs)
+                ancestor=ndb.Key(urlsafe=chat_key)).order(
+                    -cls.date).fetch_page(
+                        50, start_cursor = curs)
 
             for m in partial:
                 messages.append(
