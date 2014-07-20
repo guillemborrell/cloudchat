@@ -12,13 +12,13 @@ def prettify(message):
     video_formats = ['.webm']
     newmessage = list()
     for w in message.split():
-        if any([fmt in w for fmt in image_formats]):
-            newmessage.append(
-                '<img src="{}" class="img-responsive">'.format(w)
-            )
-        elif any([fmt in w for fmt in video_formats]):
+        if any([fmt in w for fmt in video_formats]):
             newmessage.append(
                 '<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
+            )
+        elif any([fmt in w for fmt in image_formats]):
+            newmessage.append(
+                '<img src="{}" class="img-responsive">'.format(w)
             )
         elif 'cloudchatroom.appspot.com' in w:
             newmessage.append(
