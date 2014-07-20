@@ -16,14 +16,19 @@ class NewChatPage(webapp2.RequestHandler):
                 l = f.readlines()
 
             self.response.out.headers['Content-Type'] = 'text/html'
-            self.response.out.write(''.join(l))
+            self.response.out.write(''.join(l)%(users.create_logout_url('/'))
+                                )
 
         else:
+            with open(os.path.join(
+                    os.path.dirname(__file__),
+                    'templates',
+                    'signin.html')) as f:
+                l = f.readlines()
+
             self.response.out.headers['Content-Type'] = 'text/html'
             self.response.out.write(
-                '<html><body><a href={}>Sign in</a></body></html>'.format(
-                    users.create_login_url('/new')
-                )
+                ''.join(l).format(users.create_login_url('/new'))
             )
             
 

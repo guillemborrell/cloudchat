@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
+
+    <script src="/js/controller.js"></script>
+    <title>Cloudchat!</title>
+  </head>
+  
+  <body ng-app="app">
+    <div class="container-fluid" ng-controller="IndexPage">
+      <ul class="nav nav-tabs" role="tablist">
+	<li><a href="/">Home</a></li>
+	<li><a href="/new">Your chats</a></li>
+	<li><a href="/faq">FAQ</a></li>
+      </ul>
+      <div class="row">
+	<div class="container">
+	  <h1 class="text-center">Cloudchat!</h1>
+	  <div class="col-md-6 col-md-offset-3">
+	    <p><a href="{}">Sign in with Google</p>
+	  </div>
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
