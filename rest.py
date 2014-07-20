@@ -18,7 +18,7 @@ def prettify(message):
             )
         if any([fmt in w for fmt in video_formats]):
             newmessage.append(
-                '<video src="{}" controls></video>'.format(w)
+                '<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
             )
         if 'cloudchatroom.appspot.com' in w:
             newmessage.append(

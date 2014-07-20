@@ -22,45 +22,44 @@
 	<li><a href="/faq">FAQ</a></li>
       </ul>
       <div class="row">
-	<div class="container">
-	  <h1 class="text-center">{{ title }}</h1>
-	  <div class="col-md-6 col-md-offset-3">
-	    <form ng-submit="sendMessage()" class="form-inline" role="form">
-	      <label>Nickname</label>
-	      <input type="text" ng-model="author" required><br />
-	      <label>Message</label>
-	      <input type="text" ng-model="message" required>
-	      <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
-	    </form>
-	    <p>There are {{ connected }} connections.</p>
-	    <div style="height:500px; border:1px solid; overflow:auto">
-	      <table class="table table-striped">
-		<tr  ng-repeat="message in messages">
-		  <td>
-		    <span ng-if="conversations == true">
-		      <button type="submit"
-			      class="btn btn-primary"
-			      ng-click="invite(message.id)"
-			      data-toggle="tooltip"
-			      data-placement="right"
-			      title="Send private chat invitation to {{ message.author }}">
-			{{ message.author}}
-		      </button>
-		    </span>
-		    <span ng-if="conversations == false">
-		      <strong>
-			{{ message.author}}
-		      </strong>
-		    </span>
-		  </td>
-		  <td>
-		    {{ message.when}}:
-		    <span ng-bind-html="message.text">
-		      {{ message.text }}
-		    </span>
-		  </td>
-		</tr>
-	      </table>
+	<h1 class="text-center">{{ title }}</h1>
+	<div class="col-md-6 col-md-offset-3">
+	  <form ng-submit="sendMessage()" class="form-inline" role="form">
+	    <label>Nickname</label>
+	    <input type="text" ng-model="author" required><br />
+	    <label>Message</label>
+	    <input type="text" ng-model="message" required>
+	    <input type="submit" id="submit" value="Submit" /> Or press <kbd>↵</kbd>
+	  </form>
+	  <p>There are {{ connected }} connections.</p>
+	  <div class="row well">
+	    <div ng-repeat="message in messages">
+	      <div class="col-md-12">
+		<div class="col-md-2">
+		  <div ng-if="conversations == true">
+		    <button type="submit"
+			    class="btn btn-primary"
+			    ng-click="invite(message.id)"
+			    data-toggle="tooltip"
+			    data-placement="right"
+			    title="Send private chat invitation to {{ message.author }}">
+		      {{ message.author}}
+		    </button>
+		  </div>
+		  <div ng-if="conversations == false">
+		    <strong>
+		      {{ message.author}}
+		    </strong>
+		  </div>
+		</div>
+		<div class="col-md-10">
+		  {{ message.when }}:
+		   <div ng-bind-html="message.text">
+		     {{ message.text }}
+		   </div>
+		   <hr size="2" noshade>
+		</div>
+	      </div>
 	    </div>
 	  </div>
 	</div>
