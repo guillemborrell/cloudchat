@@ -52,6 +52,7 @@ function UserPage($scope, $resource) {
 }
 
 function MainPage($scope,$resource,$sce) {
+    $scope.newMessageCounter = 0;
     $scope.token = "";
     $scope.id = "";
     $scope.author = "";
@@ -89,6 +90,12 @@ function MainPage($scope,$resource,$sce) {
 	$scope.$apply(function () {
 	    $scope.connected = data.clients;
 	    $scope.title = data.name;
+	    if (document.hidden) {
+		$scope.newMessageCounter = $scope.newMessageCounter + 1;
+	    }
+	    if ($scope.newMessageCounter > 0){
+		document.title = '('+$scope.newMessageCounter+') '+$scope.title;
+	    }
 	    for (i in messages){
 		$scope.messages.unshift(
 		    {"author": messages[i].author,
@@ -99,7 +106,6 @@ function MainPage($scope,$resource,$sce) {
 		}
 	}
 		     );
-	document.title = $scope.title;
     };
 
     $scope.connect = function(){
@@ -132,6 +138,8 @@ function MainPage($scope,$resource,$sce) {
 	}
 				       );
 	$scope.message="";
+	$scope.newMessageCounter = 0;
+	document.title = $scope.title;
     };
     
 };

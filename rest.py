@@ -81,7 +81,7 @@ class InviteResource(webapp2.RequestHandler):
             newchat.options = {"save": False,
                             "conversations": False,
                             "persistent": False}
-            newchat_key = chat.put()
+            newchat_key = newchat.put()
 
             channel.send_message(
                 body['from'],
