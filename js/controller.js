@@ -49,6 +49,10 @@ function UserPage($scope, $resource) {
 					);
 	document.getElementById("form").innerHTML = '<p>Successfully created. <a href="/new">Refresh</a> the page.</p>';
     }
+    $scope.embedCode = function(chat) {
+	var embed_string = '<iframe width="300px" height="600px" scrolling="auto", src=/embed?key=' + chat.key + '"></iframe>';
+	window.prompt("Copy to clipboard: Ctrl+C, Enter", embed_string);
+    }
 }
 
 function MainPage($scope,$resource,$sce) {

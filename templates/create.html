@@ -81,6 +81,7 @@
 		<th>Allow conversations</th>
 		<th>Connected</th>
 		<th>Download messages.</th>
+		<th>Embed code</th>
 	      </tr>
 	      <tr ng-repeat="chat in chats">
 		<td>
@@ -103,6 +104,9 @@
 		</td>
 		<td ng-if="chat.save == false">
 		  <i class="fa fa-ban"></i>
+		</td>
+		<td ng-click="embedCode(chat)">
+		  <a><i class="fa fa-clipboard"></i></a>
 		</td>
 	      </tr>
 	    </table>
