@@ -50,7 +50,7 @@ class EmbedPage(webapp2.RequestHandler):
         with open(os.path.join(
                 os.path.dirname(__file__),
                 'templates',
-                'chat.html')) as f:
+                'embed.html')) as f:
             l = f.readlines()
 
         self.response.out.headers['Content-Type'] = 'text/html'
