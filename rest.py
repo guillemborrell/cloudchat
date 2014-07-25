@@ -19,7 +19,7 @@ def prettify(message):
             )
         elif any([fmt in w for fmt in youtube_urls]):
             newmessage.append(
-                '<iframe width="560" height="315" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
+                '<iframe class="img-responsive" width="560" height="315" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
             )
         elif any([fmt in w for fmt in image_formats]):
             newmessage.append(
