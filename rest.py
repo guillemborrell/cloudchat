@@ -10,11 +10,16 @@ from models import Event, Message, ChatManager
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
     video_formats = ['.mp4','.ogg','.webm']
+    youtube_urls = ['youtube.com','youtu.be']
     newmessage = list()
     for w in message.split():
         if any([fmt in w for fmt in video_formats]):
             newmessage.append(
                 '<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
+            )
+        elif any([fmt in w for fmt in youtube_urls]):
+            newmessage.append(
+                '<iframe width="560" height="315" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
             )
         elif any([fmt in w for fmt in image_formats]):
             newmessage.append(
@@ -23,7 +28,7 @@ def prettify(message):
         elif 'cloudchatroom.appspot.com' in w:
             newmessage.append(
                 '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
-                )
+            )
         else:
             newmessage.append(w)
 
