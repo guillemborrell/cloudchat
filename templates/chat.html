@@ -47,6 +47,7 @@
 		    <button type="submit"
 			    class="btn btn-primary"
 			    ng-click="invite(message.id)"
+			    ng-bind-html="message.author"
 			    data-toggle="tooltip"
 			    data-placement="right"
 			    title="Send private chat invitation to {{ message.author }}">
@@ -54,7 +55,7 @@
 		    </button>
 		  </div>
 		  <div ng-if="conversations == false">
-		    <strong>
+		    <strong ng-bind-html="message.author">
 		      {{ message.author}}
 		    </strong>
 		  </div>

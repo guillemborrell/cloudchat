@@ -102,7 +102,7 @@ function MainPage($scope,$resource,$sce) {
 	    }
 	    for (i in messages){
 		$scope.messages.unshift(
-		    {"author": messages[i].author,
+		    {"author": $sce.trustAsHtml(messages[i].author),
 		     "when": messages[i].when,
 		     "id": messages[i].id,
 		     "text": $sce.trustAsHtml(messages[i].text)}

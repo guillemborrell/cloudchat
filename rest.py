@@ -158,9 +158,9 @@ class MessageResource(webapp2.RequestHandler):
         message.put()
 
         if users.get_current_user() == chat.owner:
-            admin = '*'
+            author = '<u>'+cgi.escape(body['author'])+'</u>'
         else:
-            admin = ''
+            author = cgi.escape(body['author'])
 
 
         for client_id in chat.clients:
@@ -169,7 +169,7 @@ class MessageResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
-                     "message": [{"author": body['author']+admin,
+                     "message": [{"author": author,
                                   "id": body['id'],
                                   "when": self.print_time(),
                                   "text": prettify(cgi.escape(body['text']))
@@ -196,7 +196,7 @@ class ConnectionResource(webapp2.RequestHandler):
             )
 
         messages = Message.query_last_from_chat(chat.key.urlsafe())
-        message_list = [{"author": m.author,
+        message_list = [{"author": cgi.escape(m.author),
                          "id": ''.join([client_id[:-8],m.client]),
                          "when": m.date.strftime("%b %d %Y %H:%M:%S"),
                          "text": prettify(cgi.escape(m.text))} for m in messages]
