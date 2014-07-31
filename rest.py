@@ -157,13 +157,19 @@ class MessageResource(webapp2.RequestHandler):
                           
         message.put()
 
+        if users.get_current_user() == chat.owner:
+            admin = '*'
+        else:
+            admin = ''
+
+
         for client_id in chat.clients:
             channel.send_message(
                 client_id,
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
-                     "message": [{"author": body['author'],
+                     "message": [{"author": body['author']+admin,
                                   "id": body['id'],
                                   "when": self.print_time(),
                                   "text": prettify(cgi.escape(body['text']))
