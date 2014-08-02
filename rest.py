@@ -70,10 +70,9 @@ class OpenResource(webapp2.RequestHandler):
         body = json.loads(self.request.body)
         if user:
             chat = ndb.Key(urlsafe=body['id'][:-8]).get()
-            if not user == chat.owner:
-                Activity(
-                    user = user,
-                    chat = chat.key).put()
+            Activity(
+                user = user,
+                chat = chat.key).put()
 
 
 
