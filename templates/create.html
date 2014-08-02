@@ -30,7 +30,8 @@
 	    <table class="table well">
 	      <tr>
 		<th>Name</th>
-		<th>Time</th>
+		<th>When</th>
+		<th>Last message on</th>
 		<th>Owner</th>
 	      </tr>
 	      <tr ng-repeat="a in activity">
@@ -40,6 +41,7 @@
 		  </a>
 		</td>
 		<td>{{ a.date }}</td>
+		<td>{{ a.last }}</td>
 		<td>{{ a.creator }}</td>
 	      </tr>
 	    </table>

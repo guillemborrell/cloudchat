@@ -279,6 +279,7 @@ class ChatResource(webapp2.RequestHandler):
                 {"name": thischat.name,
                  "date": a.date.strftime("%b %d %Y %H:%M:%S"),
                  "key":  thischat.key.urlsafe(),
+                 "last": Message.query_time_from_chat(a.chat).strftime("%b %d %Y %H:%M:%S"),
                  "creator": thischat.owner.nickname()}
             )
 

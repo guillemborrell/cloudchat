@@ -57,6 +57,12 @@ class Message(ndb.Model):
     text = ndb.StringProperty()
 
     @classmethod
+    def query_time_from_chat(cls,chat):
+        query = cls.query(ancestor=chat)
+        return query.order(-cls.date).fetch(1)[0].date
+
+
+    @classmethod
     def query_last_from_chat(cls,chat_key):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
         return query.order(-cls.date).fetch(10)
