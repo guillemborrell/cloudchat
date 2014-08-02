@@ -5,7 +5,7 @@ import webapp2
 import cgi
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
-from models import Event, Message, ChatManager
+from models import Event, Message, ChatManager, Activity
 
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
@@ -66,10 +66,15 @@ class DownloadResource(webapp2.RequestHandler):
 
 class OpenResource(webapp2.RequestHandler):
     def post(self):
+        user = users.get_current_user()
         body = json.loads(self.request.body)
-        event = Event(kind = 'connection',
-                      data = {'id':body['id'][-8:]})
-        event.put()
+        if user:
+            chat = ndb.Key(urlsafe=body['id'][:-8]).get()
+            if not user == chat.owner:
+                Activity(
+                    user = user,
+                    chat = chat.key).put()
+
 
 
 class InviteResource(webapp2.RequestHandler):
@@ -88,8 +93,8 @@ class InviteResource(webapp2.RequestHandler):
             newchat.private = True
             newchat.owner = users.User("anonymous@none.com")
             newchat.options = {"save": False,
-                            "conversations": False,
-                            "persistent": False}
+                               "conversations": False,
+                               "persistent": False}
             newchat_key = newchat.put()
 
             channel.send_message(
@@ -246,11 +251,13 @@ class ChatResource(webapp2.RequestHandler):
             user = users.get_current_user()
             if user:
                 chats = ChatManager.query_user(user,10)
+                activity = Activity.query_user(user,10)
             else:
                 pass
 
         else:
             chats = ChatManager.query_public(10)
+            activity = []
 
         chat_list = list()
         for c in chats:
@@ -266,8 +273,19 @@ class ChatResource(webapp2.RequestHandler):
                  "private": c.private}
             )
 
+        activity_list = list()
+        for a in activity:
+            thischat = a.chat.get()
+            activity_list.append(
+                {"name": thischat.name,
+                 "date": a.date.strftime("%b %d %Y %H:%M:%S"),
+                 "key":  thischat.key.urlsafe(),
+                 "creator": thischat.owner.nickname()}
+            )
+
         self.response.out.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps({'chats': chat_list}))
+        self.response.out.write(json.dumps({'chats': chat_list,
+                                            'activity': activity_list}))
 
 
     def post(self):

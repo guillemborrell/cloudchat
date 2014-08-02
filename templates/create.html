@@ -18,14 +18,36 @@
     <div class="container-fluid">
       <ul class="nav nav-tabs" role="tablist">
 	<li><a href="/">Home</a></li>
-	<li class="active"><a href="/new">Your chats</a></li>
+	<li class="active"><a href="/new">User</a></li>
 	<li><a href="/faq">FAQ</a></li>
 	<li><a href="%s">Sign out</a></li>
       </ul>
       <div class="row">
-	<div class="container"  ng-controller="UserPage">
-	  <h1 class="text-center">Cloudchat</h1>
+	<div ng-controller="UserPage">
+
 	  <div class="col-md-8 col-md-offset-2">
+	    <h2>Recent Activity</h2>
+	    <table class="table well">
+	      <tr>
+		<th>Name</th>
+		<th>Time</th>
+		<th>Owner</th>
+	      </tr>
+	      <tr ng-repeat="a in activity">
+		<td>
+		  <a href="/chat?key={{ a.key }}">
+		    {{ a.name }}
+		  </a>
+		</td>
+		<td>{{ a.date }}</td>
+		<td>{{ a.creator }}</td>
+	      </tr>
+	    </table>
+	  </div>
+
+
+	  <div class="col-md-8 col-md-offset-2">
+	    <h2>New chat</h2>
 	    <div id="form" class="well">
 	      <form ng-submit="createChat()" class="form-horizontal"
 		    role="form">
@@ -71,6 +93,8 @@
 	      </form>
 	    </div>
 	  </div>
+
+
 	  <div class="col-md-12">
 	    <h2>Your chats</h2>
 	    <table class="table well">

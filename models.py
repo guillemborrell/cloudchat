@@ -1,5 +1,6 @@
 from google.appengine.ext import ndb
 
+
 class ChatManager(ndb.Model):
     name = ndb.StringProperty()
     date = ndb.DateTimeProperty(auto_now_add=True)
@@ -37,6 +38,16 @@ class ChatManager(ndb.Model):
         client_list = self.clients
         while client in client_list: client_list.remove(client)
         self.put()
+
+
+class Activity(ndb.Model):
+    user = ndb.UserProperty()
+    chat = ndb.KeyProperty(kind=ChatManager)
+    date = ndb.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    def query_user(cls,user,num):
+        return cls.query(cls.user == user).order(-cls.date).fetch(num)
 
 
 class Message(ndb.Model):

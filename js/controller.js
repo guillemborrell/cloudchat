@@ -26,10 +26,14 @@ function UserPage($scope, $resource) {
     $scope.conversations = false;
     $scope.privte = false;
     $scope.chats = [];
+    $scope.activity = [];
     var ongetresource = $resource('/API/chat?user=true', {}, {});
     var data = ongetresource.get({}, function(){
 	for (i in data.chats){
 	    $scope.chats.push(data.chats[i]);
+	}
+	for (j in data.activity){
+	    $scope.activity.push(data.activity[j]);
 	}
     }
 				)
