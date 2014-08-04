@@ -3,15 +3,55 @@ import os
 import json
 import webapp2
 import cgi
+import re
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 from models import Event, Message, ChatManager, Activity
+from matplotlib import mathtext
+from StringIO import StringIO
+
+# global font properties for math
+font_properties = mathtext.FontProperties()
+font_properties.set_size(14)
+
+def parse_math(message):
+    equations = re.findall("\\$.*?(?<!\\\\)\\$",message)
+
+    replacements = list()
+    for eq in equations:
+        output = StringIO()
+        try:
+            mathtext.math_to_image(eq,
+                                   output,
+                                   dpi = 72,
+                                   prop = font_properties,
+                                   format = 'svg')
+            svg_equation = ''.join(output.getvalue().split('\n')[4:])
+            replacements.append(svg_equation)
+
+        except ValueError:
+            replacements.append('<i>Error in equation</i>')
+
+        output.close()
+
+    newmessage = re.sub("\\$.*?(?<!\\\\)\\$", '{}', message)
+    
+    try:
+        newmessage = newmessage.format(*replacements)
+    except:
+        newmessage = 'Could not understand your message'
+        
+    return newmessage
+
 
 def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
     video_formats = ['.mp4','.ogg','.webm']
     youtube_urls = ['youtube.com','youtu.be']
     newmessage = list()
+
+    message = parse_math(message)
+
     for w in message.split():
         if any([fmt in w for fmt in video_formats]):
             newmessage.append(
@@ -31,8 +71,13 @@ def prettify(message):
             )
         else:
             newmessage.append(w)
-
-    return ' '.join(newmessage)
+          
+    newmessage = ' '.join(newmessage)
+      
+    if len(newmessage) < 32000:
+        return newmessage
+    else:
+        return 'Message too long'
 
 
 class TokenResource(webapp2.RequestHandler):
@@ -200,20 +245,22 @@ class ConnectionResource(webapp2.RequestHandler):
             )
 
         messages = Message.query_last_from_chat(chat.key.urlsafe())
-        message_list = [{"author": cgi.escape(m.author),
-                         "id": ''.join([client_id[:-8],m.client]),
-                         "when": m.date.strftime("%b %d %Y %H:%M:%S"),
-                         "text": prettify(cgi.escape(m.text))} for m in messages]
 
-        channel.send_message(
-            client_id,
-            json.dumps(
-            {"clients": len(chat.clients),
-             "name": chat.name,
-             "message": message_list[::-1]
-         }
+        for m in messages[::-1]:
+            message = {"author": cgi.escape(m.author),
+                       "id": ''.join([client_id[:-8],m.client]),
+                       "when": m.date.strftime("%b %d %Y %H:%M:%S"),
+                       "text": prettify(cgi.escape(m.text))}
+
+            channel.send_message(
+                client_id,
+                json.dumps(
+                    {"clients": len(chat.clients),
+                     "name": chat.name,
+                     "message": [message]
+                 }
+                )
             )
-        )
         chat.add_client(client_id)
 
 class DisconnectionResource(webapp2.RequestHandler):

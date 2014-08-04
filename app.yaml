@@ -25,6 +25,9 @@ libraries:
 - name: jinja2
   version: latest
 
+- name: matplotlib
+  version: latest
+
 - name: numpy
   version: latest
 
