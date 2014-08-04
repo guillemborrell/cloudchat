@@ -14,8 +14,11 @@ from StringIO import StringIO
 font_properties = mathtext.FontProperties()
 font_properties.set_size(14)
 
+#global regexp
+regexp_latex = re.compile("\\$.*?(?<!\\\\)\\$")
+
 def parse_math(message):
-    equations = re.findall("\\$.*?(?<!\\\\)\\$",message)
+    equations = regexp_latex.findall(message)
 
     replacements = list()
     for eq in equations:
@@ -34,7 +37,7 @@ def parse_math(message):
 
         output.close()
 
-    newmessage = re.sub("\\$.*?(?<!\\\\)\\$", '{}', message)
+    newmessage = regexp_latex.sub('{}', message)
     
     try:
         newmessage = newmessage.format(*replacements)
