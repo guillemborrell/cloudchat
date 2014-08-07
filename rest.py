@@ -72,6 +72,10 @@ def prettify(message):
             newmessage.append(
                 '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
             )
+        elif 'http://' in w:
+            newmessage.append(
+                '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
+                )
         else:
             newmessage.append(w)
           
