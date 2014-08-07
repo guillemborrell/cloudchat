@@ -12,7 +12,7 @@ from StringIO import StringIO
 
 # global font properties for math
 font_properties = mathtext.FontProperties()
-font_properties.set_size(14)
+font_properties.set_size(12)
 
 #global regexp
 regexp_latex = re.compile("\\$.*?(?<!\\\\)\\$")
