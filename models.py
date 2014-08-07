@@ -65,7 +65,7 @@ class Message(ndb.Model):
     @classmethod
     def query_last_from_chat(cls,chat_key):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
-        return query.order(-cls.date).fetch(10)
+        return query.order(-cls.date).fetch(20)
 
 
     @classmethod
