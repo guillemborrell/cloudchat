@@ -51,6 +51,7 @@ def prettify(message):
     image_formats = ['.png','.gif','.jpg','.jpeg']
     video_formats = ['.mp4','.ogg','.webm']
     youtube_urls = ['youtube.com','youtu.be']
+    urls = ['http://','https://','cloudchatroom.appspot.com']
     newmessage = list()
 
     message = parse_math(message)
@@ -68,14 +69,10 @@ def prettify(message):
             newmessage.append(
                 '<img src="{}" class="img-responsive">'.format(w)
             )
-        elif 'cloudchatroom.appspot.com' in w:
+        elif any([fmt in w for fmt in urls]):
             newmessage.append(
                 '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
             )
-        elif 'http://' in w:
-            newmessage.append(
-                '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
-                )
         else:
             newmessage.append(w)
           
