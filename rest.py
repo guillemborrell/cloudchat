@@ -247,7 +247,7 @@ class ConnectionResource(webapp2.RequestHandler):
                  }
                 )
             )
-
+        
         messages = Message.query_last_from_chat(chat.key.urlsafe())
 
         for m in messages[::-1]:
@@ -265,7 +265,14 @@ class ConnectionResource(webapp2.RequestHandler):
                  }
                 )
             )
+
+        last_message_when = Message.query_time_from_chat(chat.key)
+        if last_message_when < (
+                datetime.datetime.now()-datetime.timedelta(hours=4)):
+            chat.reset_clients()
+        
         chat.add_client(client_id)
+
 
 class DisconnectionResource(webapp2.RequestHandler):
     def post(self):

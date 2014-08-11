@@ -29,14 +29,21 @@ class ChatManager(ndb.Model):
     def num_clients(self):
         return len(self.clients)
 
+    @ndb.transactional
     def add_client(self, client):
         client_list = self.clients
         client_list.append(client)
         self.put()
 
+    @ndb.transactional
     def remove_client(self, client):
         client_list = self.clients
         while client in client_list: client_list.remove(client)
+        self.put()
+
+    @ndb.transactional
+    def reset_clients(self):
+        self.clients = []
         self.put()
 
 
