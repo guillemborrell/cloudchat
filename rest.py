@@ -4,6 +4,7 @@ import json
 import webapp2
 import cgi
 import re
+import logging
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
 from models import Event, Message, ChatManager, Activity
@@ -269,6 +270,7 @@ class ConnectionResource(webapp2.RequestHandler):
         last_message_when = Message.query_time_from_chat(chat.key)
         if last_message_when < (
                 datetime.datetime.now()-datetime.timedelta(hours=4)):
+            logging.info('Reset clients in chat {}'.format(chat.key.urlsafe()))
             chat.reset_clients()
         
         chat.add_client(client_id)
