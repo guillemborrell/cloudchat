@@ -7,13 +7,20 @@ import re
 import logging
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
-from models import Event, Message, ChatManager, Activity
-from matplotlib import mathtext
+from models import Event, Message, ChatManager, Activity, DailyArchive
+try:
+    from matplotlib import mathtext
+except ImportError:
+    pass
+
 from StringIO import StringIO
 
 # global font properties for math
-font_properties = mathtext.FontProperties()
-font_properties.set_size(12)
+try:
+    font_properties = mathtext.FontProperties()
+    font_properties.set_size(12)
+except NameError:
+    pass
 
 #global regexp
 regexp_latex = re.compile("\\$.*?(?<!\\\\)\\$")
@@ -141,6 +148,7 @@ class InviteResource(webapp2.RequestHandler):
             newchat.active = True
             newchat.private = True
             newchat.owner = users.User("anonymous@none.com")
+            newchat.save = False
             newchat.options = {"save": False,
                                "conversations": False,
                                "persistent": False}
@@ -326,7 +334,7 @@ class ChatResource(webapp2.RequestHandler):
                  "owner": c.owner.nickname(),
                  "key": c.key.urlsafe(),
                  "persistent": c.options['persistent'],
-                 "save": c.options['save'],
+                 "save": c.save,
                  "conversations": c.options['conversations'],
                  "num_clients": c.num_clients(),
                  "private": c.private}
@@ -356,8 +364,34 @@ class ChatResource(webapp2.RequestHandler):
         chat.active = True
         chat.private = body['private']
         chat.owner = user
+        chat.save = body['save']
         chat.options = {"save": body['save'],
                         "conversations": body['conversations'],
                         "persistent": body['persistent']}
         chat.put()
 
+
+class BuildArchiveResource(webapp2.RequestHandler):
+    def get(self):
+        if users.get_current_user() and users.is_current_user_admin():
+            self.response.out.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps({'status': 'ok'}))
+
+        else:
+            self.response.out.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps({'status': 'failed'}))
+
+class UpdateSchema(webapp2.RequestHandler):
+    def get(self):
+        if users.get_current_user() and users.is_current_user_admin():
+            chats = ChatManager.query().fetch(100)
+            for chat in chats:
+                chat.save = chat.options['save']
+                chat.put()
+
+            self.response.out.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps({'status': [chat.name for chat in chats]}))
+            
+        else:
+            self.response.out.headers['Content-Type'] = 'application/json'
+            self.response.out.write(json.dumps({'status': 'failed'}))

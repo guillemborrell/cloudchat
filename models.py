@@ -7,6 +7,7 @@ class ChatManager(ndb.Model):
     clients = ndb.StringProperty(repeated=True)
     private = ndb.BooleanProperty()
     active = ndb.BooleanProperty()
+    save = ndb.BooleanProperty()
     owner = ndb.UserProperty()
     options = ndb.JsonProperty()
 
@@ -65,6 +66,7 @@ class Message(ndb.Model):
 
     @classmethod
     def query_time_from_chat(cls,chat):
+        #exception here
         query = cls.query(ancestor=chat)
         return query.order(-cls.date).fetch(1)[0].date
 
@@ -95,6 +97,11 @@ class Message(ndb.Model):
                     )
 
         return messages
+
+
+class DailyArchive(ndb.Model):
+    date = ndb.DateTimeProperty(auto_now_add=True)
+    messages = ndb.JsonProperty()
 
 
 class Event(ndb.Model):
