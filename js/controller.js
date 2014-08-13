@@ -71,26 +71,29 @@ function MainPage($scope,$resource,$sce) {
     $scope.cursor = "Empty";
     $scope.more = true;
     $scope.conversations = false;
+    $scope.archiveResource = $resource('/API/archive');
+    $scope.oninviteresource = $resource('/API/invite');
+    $scope.onopenresource = $resource('/API/opened');
+    $scope.onclosedresource = $resource('/API/closed');
+    $scope.tokenresource = $resource('/API/token');
+    $scope.messageresource = $resource('/API/message');
+
     $scope.invite = function(guest){
 	if ($scope.id != guest){
 	    if (guest != '0'){
-		var oninviteresource = $resource('/API/invite');
-		var data = oninviteresource.save({'from': $scope.id,
-						  'author': $scope.author,
-						  'to': guest});
+		var datai = $scope.oninviteresource.save(
+		    {'from': $scope.id,
+		     'author': $scope.author,
+		     'to': guest});
 	    }
 	}
     }
     $scope.onOpened = function() {
-	var onopenresource = $resource('/API/opened',{},{ post: {method:'POST'}});
-	var data = onopenresource.post({
-	    'id': $scope.id});
+	var data = $scope.onopenresource.save({'id': $scope.id});
     };
 
     $scope.onClosed = function() {
-	var onopenresource = $resource('/API/closed',{},{ post: {method:'POST'}});
-	var data = onopenresource.post({
-	    'id': $scope.id});
+	var data = onopenresource.save({'id': $scope.id});
     };
 
 
@@ -115,12 +118,12 @@ function MainPage($scope,$resource,$sce) {
 		     "when": messages[i].when,
 		     "id": messages[i].id,
 		     "text": $sce.trustAsHtml(messages[i].text)}
-			    );
-		}
+		);
+	    }
 	}
 		     );
     };
-
+    
     $scope.connect = function(){
 	$scope.channel = new goog.appengine.Channel($scope.token);
 	$scope.handler = {
@@ -134,17 +137,29 @@ function MainPage($scope,$resource,$sce) {
 	$scope.socket.onmessage = $scope.onMessage;
     }
 
-    var tokenresource = $resource("/API/token?key=:q");
-    var data = tokenresource.get({q:getParameterByName('key')}, function(){
-    	$scope.token = data.token;
-	$scope.id = data.id;
-	$scope.conversations = data.conversations;
-	$scope.connect();
-    });
+
+    var data = $scope.tokenresource.get(
+	params={key:getParameterByName('key')}, function(){
+    	    $scope.token = data.token;
+	    $scope.id = data.id;
+	    $scope.conversations = data.conversations;
+	    $scope.connect();
+	    var dataa = $scope.archiveResource.get(
+		params={id: $scope.id},
+		function() {
+		    $scope.more = dataa.more;
+		    $scope.cursor = dataa.cursor;
+		    for ( i in dataa.messages ){
+			$scope.messages.push(dataa.messages[i])
+		    }
+		}
+	    );
+	}
+    );
+
 
     $scope.sendMessage = function(){
-	var messageresource = $resource('/API/message',{},{ post: {method:'POST'}});
-	var data = messageresource.post({
+	var data = messageresource.save({
 	    'id': $scope.id,
 	    'author': $scope.author,
 	    'text': $scope.message
@@ -155,7 +170,6 @@ function MainPage($scope,$resource,$sce) {
 	document.title = $scope.title;
     };
 
-    $scope.archiveResource = $resource('/API/archive');
     $scope.loadOlder = function(){
 	if ($scope.more){
 	    dataa = $scope.archiveResource.get(

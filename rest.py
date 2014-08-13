@@ -274,8 +274,6 @@ class ConnectionResource(webapp2.RequestHandler):
         client_id = self.request.get('from')
         chat = ndb.Key(urlsafe=client_id[:-8]).get()
         
-        messages, cursor, more = Message.query_last_from_chat(chat.key.urlsafe())
-
         for client in chat.clients:
             channel.send_message(
                 client,
@@ -288,33 +286,6 @@ class ConnectionResource(webapp2.RequestHandler):
                 )
             )
 
-        channel.send_message(
-            client_id,
-            json.dumps(
-                {"clients":len(chat.clients)+1,
-                 "name": chat.name,
-                 "cursor": cursor.urlsafe(),
-                 "message": []
-             }
-            )
-        )
-
-        for m in messages[::-1]:
-            message = {"author": cgi.escape(m.author),
-                       "id": ''.join([client_id[:-8],m.client]),
-                       "when": m.date.strftime("%b %d %Y %H:%M:%S"),
-                       "text": prettify(cgi.escape(m.text))}
-
-            channel.send_message(
-                client_id,
-                json.dumps(
-                    {"clients": len(chat.clients),
-                     "name": chat.name,
-                     "cursor": False,
-                     "message": [message]
-                 }
-                )
-            )
 
         last_message_when = Message.query_time_from_chat(chat.key)
         if last_message_when < (
