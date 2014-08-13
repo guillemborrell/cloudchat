@@ -87,7 +87,7 @@ class Message(ndb.Model):
     def query_cursor_from_chat(cls,chat_key,cursor):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
         return query.order(-cls.date).fetch_page(
-            20,Cursor(urlsafe=cursor))
+            20,start_cursor = Cursor(urlsafe=cursor))
 
 
     @classmethod

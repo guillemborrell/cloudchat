@@ -69,6 +69,7 @@ function MainPage($scope,$resource,$sce) {
     $scope.message = "";
     $scope.messages = [];
     $scope.cursor = "Empty";
+    $scope.more = true;
     $scope.conversations = false;
     $scope.invite = function(guest){
 	if ($scope.id != guest){
@@ -154,7 +155,21 @@ function MainPage($scope,$resource,$sce) {
 	document.title = $scope.title;
     };
 
+    $scope.archiveResource = $resource('/API/archive');
     $scope.loadOlder = function(){
-	window.prompt("hoo", "hoo");
+	if ($scope.more){
+	    dataa = $scope.archiveResource.get(
+		params={cursor: $scope.cursor,
+			id: $scope.id},
+		function() {
+		    $scope.more = dataa.more;
+		    $scope.cursor = dataa.cursor;
+		    for ( i in dataa.messages ){
+			$scope.messages.push(dataa.messages[i])
+		    }
+		}
+	    );
+	}
     }
 };
+    

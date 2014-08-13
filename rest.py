@@ -206,6 +206,30 @@ class InviteResource(webapp2.RequestHandler):
             )
             
 
+class ArchiveResource(webapp2.RequestHandler):
+    def get(self):
+        cursor_key = self.request.get('cursor')
+        client_id = self.request.get('id')
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
+        messages, cursor, more = Message.query_cursor_from_chat(
+            chat.key.urlsafe(),
+            cursor_key)
+        messages_sent = list()
+
+        for m in messages:
+            messages_sent.append({"author": cgi.escape(m.author),
+                                  "id": ''.join([client_id[:-8],m.client]),
+                                  "when": m.date.strftime("%b %d %Y %H:%M:%S"),
+                                  "text": prettify(cgi.escape(m.text))}
+            )
+            
+
+        self.response.out.headers['Content-Type'] = 'application/json'
+        self.response.out.write(json.dumps({'cursor': cursor.urlsafe(),
+                                            'more': more,
+                                            'messages': messages_sent}))
+
 
 class MessageResource(webapp2.RequestHandler):
     def print_time(self):
