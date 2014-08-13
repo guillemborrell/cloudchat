@@ -67,7 +67,6 @@ class Message(ndb.Model):
 
     @classmethod
     def query_time_from_chat(cls,chat):
-        #exception here
         query = cls.query(ancestor=chat)
         try:
             date = query.order(-cls.date).get().date
@@ -80,7 +79,7 @@ class Message(ndb.Model):
     @classmethod
     def query_last_from_chat(cls,chat_key):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
-        return query.order(-cls.date).fetch_page(20)
+        return query.order(-cls.date).fetch_page(10)
 
 
     @classmethod
