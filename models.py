@@ -1,5 +1,5 @@
+import datetime
 from google.appengine.ext import ndb
-
 
 class ChatManager(ndb.Model):
     name = ndb.StringProperty()
@@ -68,7 +68,12 @@ class Message(ndb.Model):
     def query_time_from_chat(cls,chat):
         #exception here
         query = cls.query(ancestor=chat)
-        return query.order(-cls.date).fetch(1)[0].date
+        try:
+            date = query.order(-cls.date).get().date
+        except:
+            date = datetime.datetime.now()
+
+        return date:
 
 
     @classmethod

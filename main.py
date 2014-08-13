@@ -3,7 +3,8 @@ import webapp2
 from google.appengine.api import users
 from rest import TokenResource, OpenResource, MessageResource, ChatResource
 from rest import ConnectionResource, DisconnectionResource, DownloadResource
-from rest import InviteResource, BuildArchiveResource, UpdateSchema
+from rest import InviteResource, BuildArchiveResource
+
     
 class NewChatPage(webapp2.RequestHandler):
     def get(self):
@@ -95,7 +96,6 @@ application = webapp2.WSGIApplication([
     ('/API/download', DownloadResource),
     ('/API/invite', InviteResource),
     ('/API/buildarchive', BuildArchiveResource),
-    ('/API/updateschema', UpdateSchema),
     ('/API/chat', ChatResource)], debug=True)
 
 
