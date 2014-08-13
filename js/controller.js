@@ -159,7 +159,7 @@ function MainPage($scope,$resource,$sce) {
 
 
     $scope.sendMessage = function(){
-	var data = messageresource.save({
+	var data = $scope.messageresource.save({
 	    'id': $scope.id,
 	    'author': $scope.author,
 	    'text': $scope.message
