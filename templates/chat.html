@@ -6,7 +6,8 @@
     <link rel="stylesheet"
 	  href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <script src='/_ah/channel/jsapi'></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>  
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
@@ -68,6 +69,11 @@
 		   <hr size="2" noshade>
 		</div>
 	      </div>
+	    </div>
+	    <div class="text-center">
+	      <button class="btn"
+		      ng-click="loadOlder(cursor)">
+		Load Older</button>
 	    </div>
 	  </div>
 	</div>

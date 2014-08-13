@@ -1,5 +1,6 @@
 import datetime
 from google.appengine.ext import ndb
+from google.appengine.datastore.datastore_query import Cursor
 
 class ChatManager(ndb.Model):
     name = ndb.StringProperty()
@@ -79,7 +80,14 @@ class Message(ndb.Model):
     @classmethod
     def query_last_from_chat(cls,chat_key):
         query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
-        return query.order(-cls.date).fetch(20)
+        return query.order(-cls.date).fetch_page(20)
+
+
+    @classmethod
+    def query_cursor_from_chat(cls,chat_key,cursor):
+        query = cls.query(ancestor=ndb.Key(urlsafe=chat_key))
+        return query.order(-cls.date).fetch_page(
+            20,Cursor(urlsafe=cursor))
 
 
     @classmethod
@@ -102,11 +110,6 @@ class Message(ndb.Model):
                     )
 
         return messages
-
-
-class DailyArchive(ndb.Model):
-    date = ndb.DateTimeProperty(auto_now_add=True)
-    messages = ndb.JsonProperty()
 
 
 class Event(ndb.Model):

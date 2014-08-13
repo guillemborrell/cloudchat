@@ -68,6 +68,7 @@ function MainPage($scope,$resource,$sce) {
     $scope.title = "Cloud Chat";
     $scope.message = "";
     $scope.messages = [];
+    $scope.cursor = "Empty";
     $scope.conversations = false;
     $scope.invite = function(guest){
 	if ($scope.id != guest){
@@ -97,6 +98,9 @@ function MainPage($scope,$resource,$sce) {
 	messages = data.message
 	$scope.$apply(function () {
 	    $scope.connected = data.clients;
+	    if (data.cursor){
+		$scope.cursor = data.cursor;
+	    }
 	    $scope.title = data.name;
 	    if (document.hidden) {
 		$scope.newMessageCounter = $scope.newMessageCounter + 1;
@@ -149,5 +153,8 @@ function MainPage($scope,$resource,$sce) {
 	$scope.newMessageCounter = 0;
 	document.title = $scope.title;
     };
-    
+
+    $scope.loadOlder = function(){
+	window.prompt("hoo", "hoo");
+    }
 };

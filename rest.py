@@ -7,7 +7,7 @@ import re
 import logging
 from google.appengine.api import channel, users
 from google.appengine.ext import ndb
-from models import Event, Message, ChatManager, Activity, DailyArchive
+from models import Event, Message, ChatManager, Activity
 try:
     from matplotlib import mathtext
 except ImportError:
@@ -159,6 +159,7 @@ class InviteResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
+                     "cursor": False,
                      "message": [
                          {"author": 'ADMIN',
                           "id": '0',
@@ -175,6 +176,7 @@ class InviteResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
+                     "cursor": False,
                      "message": [
                          {"author": 'ADMIN',
                           "id": '0',
@@ -193,6 +195,7 @@ class InviteResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
+                     "cursor": False,
                      "message": [{"author": 'ADMIN',
                                   "id": '0',
                                   "when": self.print_time(),
@@ -231,6 +234,7 @@ class MessageResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients),
                      "name": chat.name,
+                     "cursor": False,
                      "message": [{"author": author,
                                   "id": body['id'],
                                   "when": self.print_time(),
@@ -245,6 +249,8 @@ class ConnectionResource(webapp2.RequestHandler):
     def post(self):
         client_id = self.request.get('from')
         chat = ndb.Key(urlsafe=client_id[:-8]).get()
+        
+        messages, cursor, more = Message.query_last_from_chat(chat.key.urlsafe())
 
         for client in chat.clients:
             channel.send_message(
@@ -252,12 +258,22 @@ class ConnectionResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients":len(chat.clients)+1,
                      "name": chat.name,
+                     "cursor": False,
                      "message": []
                  }
                 )
             )
-        
-        messages = Message.query_last_from_chat(chat.key.urlsafe())
+
+        channel.send_message(
+            client_id,
+            json.dumps(
+                {"clients":len(chat.clients)+1,
+                 "name": chat.name,
+                 "cursor": cursor.urlsafe(),
+                 "message": []
+             }
+            )
+        )
 
         for m in messages[::-1]:
             message = {"author": cgi.escape(m.author),
@@ -270,6 +286,7 @@ class ConnectionResource(webapp2.RequestHandler):
                 json.dumps(
                     {"clients": len(chat.clients),
                      "name": chat.name,
+                     "cursor": False,
                      "message": [message]
                  }
                 )
@@ -295,6 +312,7 @@ class DisconnectionResource(webapp2.RequestHandler):
                 json.dumps(
                     {"name": chat.name,
                      "clients":len(chat.clients)-1,
+                     "cursor": False,
                      "message": []
                  }
                 )
@@ -371,13 +389,4 @@ class ChatResource(webapp2.RequestHandler):
         chat.put()
 
 
-class BuildArchiveResource(webapp2.RequestHandler):
-    def get(self):
-        if users.get_current_user() and users.is_current_user_admin():
-            self.response.out.headers['Content-Type'] = 'application/json'
-            self.response.out.write(json.dumps({'status': 'ok'}))
-
-        else:
-            self.response.out.headers['Content-Type'] = 'application/json'
-            self.response.out.write(json.dumps({'status': 'failed'}))
 
