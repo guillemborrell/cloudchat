@@ -73,7 +73,7 @@ class Message(ndb.Model):
         except:
             date = datetime.datetime.now()
 
-        return date:
+        return date
 
 
     @classmethod
