@@ -33,7 +33,8 @@
 	    </div>
 	  </form>
 	  <div ng-repeat="message in messages">
-	    <span ng-if="conversations == true">
+	    <span ng-if="conversations == true"
+		  title="{{ message.when }}">
 	      <button ng-click="invite(message.id)"
 		      ng-bind-html="message.author"
 		      title="Send private chat invitation to {{ message.author }}">
@@ -41,7 +42,8 @@
 	      </button>
 	    </span>
 	    <span ng-if="conversations == false"
-		  style="font-size:0.8em;">
+		  style="font-size:0.8em;"
+		  title="{{ message.when }}">
 	      <strong ng-bind-html="message.author">
 		{{ message.author}}:
 	      </strong>
