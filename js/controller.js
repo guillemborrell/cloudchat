@@ -150,7 +150,12 @@ function MainPage($scope,$resource,$sce) {
 		    $scope.more = dataa.more;
 		    $scope.cursor = dataa.cursor;
 		    for ( i in dataa.messages ){
-			$scope.messages.push(dataa.messages[i])
+			$scope.messages.push(
+			    {"author": $sce.trustAsHtml(dataa.messages[i].author),
+			     "when": dataa.messages[i].when,
+			     "id": dataa.messages[i].id,
+			     "text": dataa.$sce.trustAsHtml(messages[i].text)}
+			)
 		    }
 		}
 	    );
@@ -179,7 +184,12 @@ function MainPage($scope,$resource,$sce) {
 		    $scope.more = dataa.more;
 		    $scope.cursor = dataa.cursor;
 		    for ( i in dataa.messages ){
-			$scope.messages.push(dataa.messages[i])
+			$scope.messages.push(
+			    {"author": $sce.trustAsHtml(dataa.messages[i].author),
+			     "when": dataa.messages[i].when,
+			     "id": dataa.messages[i].id,
+			     "text": dataa.$sce.trustAsHtml(messages[i].text)}
+			)
 		    }
 		}
 	    );
