@@ -154,7 +154,7 @@ function MainPage($scope,$resource,$sce) {
 			    {"author": $sce.trustAsHtml(dataa.messages[i].author),
 			     "when": dataa.messages[i].when,
 			     "id": dataa.messages[i].id,
-			     "text": dataa.$sce.trustAsHtml(messages[i].text)}
+			     "text": $sce.trustAsHtml(dataa.messages[i].text)}
 			)
 		    }
 		}
@@ -188,7 +188,7 @@ function MainPage($scope,$resource,$sce) {
 			    {"author": $sce.trustAsHtml(dataa.messages[i].author),
 			     "when": dataa.messages[i].when,
 			     "id": dataa.messages[i].id,
-			     "text": dataa.$sce.trustAsHtml(messages[i].text)}
+			     "text": $sce.trustAsHtml(dataa.messages[i].text)}
 			)
 		    }
 		}
