@@ -64,6 +64,7 @@ class Message(ndb.Model):
     author = ndb.StringProperty()
     client = ndb.StringProperty()
     text = ndb.StringProperty()
+    peers = ndb.IntegerProperty()
 
     @classmethod
     def query_time_from_chat(cls,chat):

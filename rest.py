@@ -242,6 +242,7 @@ class MessageResource(webapp2.RequestHandler):
         message = Message(parent = chat.key,
                           author = body['author'],
                           text   = body['text'],
+                          peers  = len(chat.clients),
                           client = body['id'][-8:])
                           
         message.put()
