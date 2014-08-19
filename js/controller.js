@@ -70,6 +70,7 @@ function MainPage($scope,$resource,$sce) {
     $scope.messages = [];
     $scope.cursor = "Empty";
     $scope.more = true;
+    $scope.key = getParameterByName('key');
     $scope.conversations = false;
     $scope.archiveResource = $resource('/API/archive');
     $scope.oninviteresource = $resource('/API/invite');

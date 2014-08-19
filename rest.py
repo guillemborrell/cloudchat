@@ -1,3 +1,4 @@
+
 import datetime
 import os
 import json
@@ -113,12 +114,27 @@ class TokenResource(webapp2.RequestHandler):
 class DownloadResource(webapp2.RequestHandler):
     def get(self):
         chat_key = self.request.get('key')
-        self.response.out.headers['Content-Type'] = 'application/json'
-        self.response.out.write(
-            json.dumps(
-                Message.query_all_from_chat(chat_key)
+        form = self.request.get('format')
+        
+        if form == 'json':
+            self.response.out.headers['Content-Type'] = 'application/json'
+            self.response.out.write(
+                json.dumps(
+                    Message.query_all_from_chat(chat_key)
+                )
             )
-        )
+            
+        else:
+            text = []
+            for message in Message.query_all_from_chat(chat_key):
+                text.append(u'{}, {}: {}'.format(message['author'],
+                                                 message['date'],
+                                                 message['text'])
+                        )
+            
+            text.reverse()
+            self.response.out.headers['Content-Type'] = 'text/plain'
+            self.response.out.write(u'\n'.join(text))
 
 
 class OpenResource(webapp2.RequestHandler):

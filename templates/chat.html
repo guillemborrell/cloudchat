@@ -73,7 +73,14 @@
 	    <div class="text-center">
 	      <button class="btn"
 		      ng-click="loadOlder(cursor)">
-		Load Older</button>
+		Load Older
+	      </button>
+	      <a href="/API/download?key={{ key }}"
+		 download="messages.txt">
+		<button class="btn btn-primary btn-xs">
+		  <i class="fa fa-download"></i>
+		</button>
+	      </a>
 	    </div>
 	  </div>
 	</div>

@@ -100,12 +100,12 @@ class Message(ndb.Model):
             partial, curs, more = cls.query(
                 ancestor=ndb.Key(urlsafe=chat_key)).order(
                     -cls.date).fetch_page(
-                        50, start_cursor = curs)
+                        100, start_cursor = curs)
 
             for m in partial:
                 messages.append(
                     {'author': m.author,
-                     'date': m.date.isoformat(),
+                     'date': m.date.strftime("%b %d %Y %H:%M:%S"),
                      'text': m.text}
                     )
 
