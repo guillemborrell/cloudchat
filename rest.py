@@ -125,42 +125,14 @@ class DownloadResource(webapp2.RequestHandler):
             )
             
         else:
-            text = list()
-            futures = list()
-            cursors = [None]
-            curs = None
-            more = True
-
-            while more:
-                k, curs, more = Message.query(
-                    ancestor = ndb.Key(urlsafe=chat_key)).order(
-                        Message.date).fetch_page(
-                            100,
-                            start_cursor = curs,
-                            keys_only = True)
-
-                cursors.append(curs)
-
-            for curs in cursors:
-                futures.append(
-                    Message.query(
-                        ancestor = ndb.Key(urlsafe=chat_key)).order(
-                            Message.date).fetch_page_async(
-                                100,
-                                start_cursor = curs)
-                )
-
-
-            for future in futures:
-                messages, curs, more = future.get_result()
-                for message in messages:
-                    text.append(u'{}, {}: {}'.format(
-                        message.author,
-                        message.date.strftime("%b %d %Y %H:%M:%S"),
-                        message.text)
-                            )
+            text = []
+            for message in Message.query_all_from_chat(chat_key):
+                text.append(u'{}, {}: {}'.format(message['author'],
+                                                 message['date'],
+                                                 message['text'])
+                        )
             
-
+            text.reverse()
             self.response.out.headers['Content-Type'] = 'text/plain'
             self.response.out.write(u'\n'.join(text))
 
