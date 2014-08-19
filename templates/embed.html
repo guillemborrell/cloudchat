@@ -58,6 +58,7 @@
 	      Load Older
 	    </button>
 	    <a href="/API/download?key={{ key }}"
+		 onclick="return confirm('This operation may take a long time. Are you sure?')"
 	       download="messages.txt">
 	      <i class="fa fa-download"></i>
 	    </a>
