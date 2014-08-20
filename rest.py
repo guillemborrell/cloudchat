@@ -68,19 +68,19 @@ def prettify(message):
     for w in message.split():
         if any([fmt in w for fmt in video_formats]):
             newmessage.append(
-                '<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
+                u'<video class="img-responsive" controls><source src="{}" type="video/webm"></video>'.format(w)
             )
         elif any([fmt in w for fmt in youtube_urls]):
             newmessage.append(
-                '<iframe width="480" height="320" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
+                u'<iframe width="480" height="320" src="//www.youtube.com/embed/{}" frameborder="0" allowfullscreen></iframe>'.format(w[-11:])
             )
         elif any([fmt in w for fmt in image_formats]):
             newmessage.append(
-                '<img src="{}" class="img-responsive">'.format(w)
+                u'<img src="{}" class="img-responsive">'.format(w)
             )
         elif any([fmt in w for fmt in urls]):
             newmessage.append(
-                '<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
+                u'<a href="{}" target="_blank">{}...</a>'.format(w,w[:20])
             )
         else:
             newmessage.append(w)
@@ -261,7 +261,7 @@ class MessageResource(webapp2.RequestHandler):
                           peers  = len(chat.clients),
                           client = body['id'][-8:])
                           
-        message.put()
+        future = message.put_async()
 
         if users.get_current_user() == chat.owner:
             author = '<u>'+cgi.escape(body['author'])+'</u>'
@@ -284,6 +284,8 @@ class MessageResource(webapp2.RequestHandler):
                  }
                 )
             )
+        
+        future.get_result()
 
 
 class ConnectionResource(webapp2.RequestHandler):
