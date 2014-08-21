@@ -248,6 +248,16 @@ class ArchiveResource(webapp2.RequestHandler):
                                             'messages': messages_sent}))
 
 
+class ThreadedMessage(Thread):
+    def __init__(self,client,message):
+        Thread.__init__(self)
+        self.client = client
+        self.message = message
+
+    def run(self):
+        channel.send_message(self.client,self.message)        
+
+
 class MessageResource(webapp2.RequestHandler):
     def print_time(self):
         return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
@@ -255,8 +265,8 @@ class MessageResource(webapp2.RequestHandler):
     def post(self):
         body = json.loads(self.request.body)
         chat_key = body['id'][:-8]
-        threads = []
         chat = ndb.Key(urlsafe=chat_key).get()
+        threads = []
         message = Message(parent = chat.key,
                           author = body['author'],
                           text   = body['text'],
@@ -271,7 +281,7 @@ class MessageResource(webapp2.RequestHandler):
         else:
             author = cgi.escape(body['author'])
 
-        threads.append(Thread(name=message.put))
+        future = message.put_async()
 
         for i,client_id in enumerate(chat.clients):
             message_string = json.dumps(
@@ -285,15 +295,13 @@ class MessageResource(webapp2.RequestHandler):
                           }]
              }
             )
-            threads.append(Thread(name=channel.send_message,
-                                  args=(client_id,message_string)))
-
-        print threads
-        for thread in threads:
-            thread.start()
+            threads.append(ThreadedMessage(client_id,message_string))
+            threads[i].start()
 
         for thread in threads:
             thread.join()
+
+        future.get_result()
 
 
 class ConnectionResource(webapp2.RequestHandler):
