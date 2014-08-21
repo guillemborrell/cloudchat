@@ -275,14 +275,10 @@ class MessageResource(webapp2.RequestHandler):
                           
         future = message.put_async()
 
-
-
         if users.get_current_user() == chat.owner:
             author = '<u>'+cgi.escape(body['author'])+'</u>'
         else:
             author = cgi.escape(body['author'])
-
-        future = message.put_async()
 
         for i,client_id in enumerate(chat.clients):
             message_string = json.dumps(
