@@ -15,6 +15,7 @@ except ImportError:
     pass
 
 from StringIO import StringIO
+from threading import Thread
 
 # global font properties for math
 try:
@@ -247,6 +248,16 @@ class ArchiveResource(webapp2.RequestHandler):
                                             'messages': messages_sent}))
 
 
+class ThreadedMessage(Thread):
+    def __init__(self,client,message):
+        Thread.__init__(self)
+        self.client = client
+        self.message = message
+
+    def run(self):
+        channel.send_message(self.client,self.message)        
+
+
 class MessageResource(webapp2.RequestHandler):
     def print_time(self):
         return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
@@ -255,6 +266,7 @@ class MessageResource(webapp2.RequestHandler):
         body = json.loads(self.request.body)
         chat_key = body['id'][:-8]
         chat = ndb.Key(urlsafe=chat_key).get()
+        threads = []
         message = Message(parent = chat.key,
                           author = body['author'],
                           text   = body['text'],
@@ -263,28 +275,33 @@ class MessageResource(webapp2.RequestHandler):
                           
         future = message.put_async()
 
+
+
         if users.get_current_user() == chat.owner:
             author = '<u>'+cgi.escape(body['author'])+'</u>'
         else:
             author = cgi.escape(body['author'])
 
+        future = message.put_async()
 
-        for client_id in chat.clients:
-            channel.send_message(
-                client_id,
-                json.dumps(
-                    {"clients":len(chat.clients),
-                     "name": chat.name,
-                     "cursor": False,
-                     "message": [{"author": author,
-                                  "id": body['id'],
-                                  "when": self.print_time(),
-                                  "text": prettify(cgi.escape(body['text']))
-                              }]
-                 }
-                )
+        for i,client_id in enumerate(chat.clients):
+            message_string = json.dumps(
+                {"clients":len(chat.clients),
+                 "name": chat.name,
+                 "cursor": False,
+                 "message": [{"author": author,
+                              "id": body['id'],
+                              "when": self.print_time(),
+                              "text": prettify(cgi.escape(body['text']))
+                          }]
+             }
             )
-        
+            threads.append(ThreadedMessage(client_id,message_string))
+            threads[i].start()
+
+        for thread in threads:
+            thread.join()
+
         future.get_result()
 
 
