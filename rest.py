@@ -14,9 +14,8 @@ except ImportError:
     pass
 
 from StringIO import StringIO
-from queue import ThreadPool
+from threading import Thread
 
-pool = ThreadPool(4)
 
 # global font properties for math
 try:
@@ -256,6 +255,7 @@ class MessageResource(webapp2.RequestHandler):
     def post(self):
         body = json.loads(self.request.body)
         chat_key = body['id'][:-8]
+        threads = []
         chat = ndb.Key(urlsafe=chat_key).get()
         message = Message(parent = chat.key,
                           author = body['author'],
@@ -264,14 +264,16 @@ class MessageResource(webapp2.RequestHandler):
                           client = body['id'][-8:])
                           
 
+
+
         if users.get_current_user() == chat.owner:
             author = '<u>'+cgi.escape(body['author'])+'</u>'
         else:
             author = cgi.escape(body['author'])
 
-        pool.add_task(message.put)
+        threads.append(Thread(name=message.put))
 
-        for client_id in chat.clients:
+        for i,client_id in enumerate(chat.clients):
             message_string = json.dumps(
                 {"clients":len(chat.clients),
                  "name": chat.name,
@@ -283,11 +285,15 @@ class MessageResource(webapp2.RequestHandler):
                           }]
              }
             )
-            pool.add_task(channel.send_message,
-                          client_id,
-                          message_string)
-                
-        pool.wait_completion()
+            threads.append(Thread(name=channel.send_message,
+                                  args=(client_id,message_string)))
+
+        print threads
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join()
 
 
 class ConnectionResource(webapp2.RequestHandler):
