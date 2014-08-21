@@ -1,3 +1,4 @@
+
 import datetime
 import os
 import json
@@ -14,9 +15,6 @@ except ImportError:
     pass
 
 from StringIO import StringIO
-from queue import ThreadPool
-
-pool = ThreadPool(4)
 
 # global font properties for math
 try:
@@ -263,31 +261,31 @@ class MessageResource(webapp2.RequestHandler):
                           peers  = len(chat.clients),
                           client = body['id'][-8:])
                           
+        future = message.put_async()
 
         if users.get_current_user() == chat.owner:
             author = '<u>'+cgi.escape(body['author'])+'</u>'
         else:
             author = cgi.escape(body['author'])
 
-        pool.add_task(message.put)
 
         for client_id in chat.clients:
-            message_string = json.dumps(
-                {"clients":len(chat.clients),
-                 "name": chat.name,
-                 "cursor": False,
-                 "message": [{"author": author,
-                              "id": body['id'],
-                              "when": self.print_time(),
-                              "text": prettify(cgi.escape(body['text']))
-                          }]
-             }
+            channel.send_message(
+                client_id,
+                json.dumps(
+                    {"clients":len(chat.clients),
+                     "name": chat.name,
+                     "cursor": False,
+                     "message": [{"author": author,
+                                  "id": body['id'],
+                                  "when": self.print_time(),
+                                  "text": prettify(cgi.escape(body['text']))
+                              }]
+                 }
+                )
             )
-            pool.add_task(channel.send_message,
-                          client_id,
-                          message_string)
-                
-        pool.wait_completion()
+        
+        future.get_result()
 
 
 class ConnectionResource(webapp2.RequestHandler):
