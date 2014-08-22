@@ -8,6 +8,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="/css/dialogs.css" rel="stylesheet">
     <script type="text/javascript" src="/js/controller.js"></script>
     <title>Cloudchat</title>
   </head>
@@ -32,7 +33,9 @@
 	      connected }}
 	    </div>
 	  </form>
-	  <div ng-repeat="message in messages">
+	  <div class="balloon"
+	       ng-repeat="message in messages"
+	       title="{{ message.when }}">
 	    <span ng-if="conversations == true">
 	      <button ng-click="invite(message.id)"
 		      ng-bind-html="message.author"
@@ -47,11 +50,9 @@
 	      </strong>
 	    </span>
 	    <span ng-bind-html="message.text"
-		  style="font-size:0.8em;"
-		  title="{{ message.when }}">
+		  style="font-size:0.8em;">
 	      {{ message.text }}
 	    </span>
-	    <hr size="1" noshade>
 	  </div>
 	  <div style="text-align:center;">
 	    <button ng-click="loadOlder(cursor)">

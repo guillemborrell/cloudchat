@@ -11,7 +11,9 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-resource.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-sanitize.js"></script>
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+	  rel="stylesheet">
+    <link href="/css/dialogs.css" rel="stylesheet">
     <script type="text/javascript" src="/js/controller.js"></script>
     <title>Cloudchat</title>
   </head>
@@ -26,59 +28,59 @@
       <div class="row">
 	<h1 class="text-center">{{ title }}</h1>
 	<div class="col-md-6 col-md-offset-3">
-	  <form ng-submit="sendMessage()" class="form-inline" role="form">
-	    <div class="form-group">
-	      <input 
-		 class="form-control" type="text" ng-model="author"
-		 placeholder="Nickname" required >
-	      <input
+	  <div class="well">
+	    <form ng-submit="sendMessage()" class="form-inline" role="form">
+	      <div class="form-group">
+		<input 
+		   class="form-control" type="text" ng-model="author"
+		   placeholder="Nickname" required >
+		<input
 		 class="form-control" type="text" ng-model="message"
-		 placeholder="Message (press ↵ to send)" required > 
-	      <input type="submit" class="btn btn-default"
-		     id="submit" value="Submit" />
-	      <i class="fa fa-users"></i> &#215; {{
-	      connected }}
-	    </div>
+		   placeholder="Message (press ↵ to send)" required > 
+		<input type="submit" class="btn btn-default"
+		       id="submit" value="Submit" />
+		<i class="fa fa-users"></i> &#215; {{
+		connected }}
+	      </div>
 	  </form>
-	  <div class="row well">
+	  </div>
+	  <div class="row">
 	    <div ng-repeat="message in messages">
 	      <div class="col-md-12">
-		<div class="col-md-2">
-		  <div ng-if="conversations == true">
-		    <button type="submit"
-			    class="btn btn-primary"
-			    ng-click="invite(message.id)"
-			    ng-bind-html="message.author"
-			    data-toggle="tooltip"
-			    data-placement="right"
-			    title="Send private chat invitation to {{ message.author }}">
-		      {{ message.author}}
-		    </button>
-		  </div>
-		  <div ng-if="conversations == false">
-		    <strong ng-bind-html="message.author">
-		      {{ message.author}}
-		    </strong>
-		  </div>
+		<span ng-if="conversations == true">
+		  <button type="submit"
+			  class="btn btn-primary"
+			  ng-click="invite(message.id)"
+			  ng-bind-html="message.author"
+			  data-toggle="tooltip"
+			  data-placement="right"
+			  title="Send private chat invitation to {{ message.author }}">
+		    {{ message.author}}
+		  </button>
+		</span>
+		<span ng-if="conversations == false">
+		  <strong ng-bind-html="message.author">
+		    {{ message.author}}
+		  </strong>
+		</span>
+		{{ message.when }}:
+	      <div class="balloon-chat">
+		<div ng-bind-html="message.text">
+		  {{ message.text }}
 		</div>
-		<div class="col-md-10">
-		  {{ message.when }}:
-		   <div ng-bind-html="message.text">
-		     {{ message.text }}
-		   </div>
-		   <hr size="2" noshade>
-		</div>
+		<hr size="2" noshade>
 	      </div>
 	    </div>
-	    <div class="text-center">
-	      <button class="btn"
-		      ng-click="loadOlder(cursor)">
-		Load Older
-	      </button>
-	      <a href="/API/download?key={{ key }}"
-		 onclick="return confirm('You asked to download all the messages of this chat. This operation may take a long time. Are you sure?')"
+	  </div>
+	  <div class="text-center">
+	    <button class="btn"
+		    ng-click="loadOlder(cursor)">
+	      Load Older
+	    </button>
+	    <a href="/API/download?key={{ key }}"
+	       onclick="return confirm('You asked to download all the messages of this chat. This operation may take a long time. Are you sure?')"
 		 download="messages.txt">
-		<button class="btn btn-primary btn-xs">
+	      <button class="btn btn-primary btn-xs">
 		  <i class="fa fa-download"></i>
 		</button>
 	      </a>
