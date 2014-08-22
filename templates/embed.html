@@ -40,11 +40,16 @@
 	      <button ng-click="invite(message.id)"
 		      ng-bind-html="message.author"
 		      title="Send private chat invitation to {{ message.author }}">
-		{{ message.author}}
+		<i class="fa fa-user"
+		   style="color: black;">
+		</i>{{ message.author}}
 	      </button>
 	    </span>
 	    <span ng-if="conversations == false"
 		  style="font-size:0.8em;">
+	      <i class="fa fa-user"
+		 style="color: black;">
+	      </i>
 	      <strong ng-bind-html="message.author">
 		{{ message.author}}:
 	      </strong>
