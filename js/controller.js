@@ -53,7 +53,7 @@ function UserPage($scope, $resource) {
 	    $scope.chats.splice(idx,1);
 	}
     }
-    var data = $scope.chatresource(params={user:'true'}, function(){
+    var data = $scope.chatresource.get(params={user:'true'}, function(){
 	for (i in data.chats){
 	    $scope.chats.push(data.chats[i]);
 	}
