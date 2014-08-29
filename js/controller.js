@@ -28,19 +28,9 @@ function UserPage($scope, $resource) {
     $scope.chats = [];
     $scope.activity = [];
     $scope.chatresource = $resource('/API/chat');
-    var data = $scope.chatresource(params={user:'true'}, function(){
-	for (i in data.chats){
-	    $scope.chats.push(data.chats[i]);
-	}
-	for (j in data.activity){
-	    $scope.activity.push(data.activity[j]);
-	}
-    }
-				)
     $scope.replaceSave = function(chat) {
 	chat.save = false;
     }
-
     $scope.createChat = function() {
 	var datas = $scope.chatresource.save({
 	    "name": $scope.name,
@@ -63,6 +53,15 @@ function UserPage($scope, $resource) {
 	    $scope.chats.splice(idx,1);
 	}
     }
+    var data = $scope.chatresource(params={user:'true'}, function(){
+	for (i in data.chats){
+	    $scope.chats.push(data.chats[i]);
+	}
+	for (j in data.activity){
+	    $scope.activity.push(data.activity[j]);
+	}
+    }
+				  );
 }
 
 function MainPage($scope,$resource,$sce) {
