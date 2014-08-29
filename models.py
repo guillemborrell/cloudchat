@@ -99,8 +99,9 @@ class Message(ndb.Model):
         while more:
             if month:
                 partial, curs, more = cls.query(
-                    ancestor=ndb.Key(urlsafe=chat_key),
-                    cls.date > datetime.datetime.now()-datetime.timedelta(days=20)).order(
+                    cls.date > datetime.datetime.now()-datetime.timedelta(days=20),
+                    ancestor=ndb.Key(urlsafe=chat_key)
+                    ).order(
                         -cls.date).fetch_page(
                             100, start_cursor = curs)
                 
