@@ -127,7 +127,7 @@ class DownloadResource(webapp2.RequestHandler):
             
         else:
             text = []
-            for message in Message.query_all_from_chat(chat_key):
+            for message in Message.query_all_from_chat(chat_key,limit=True):
                 text.append(u'{}, {}: {}'.format(message['author'],
                                                  message['date'],
                                                  message['text'])
