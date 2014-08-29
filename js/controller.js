@@ -49,7 +49,7 @@ function UserPage($scope, $resource) {
     $scope.deactivate = function(chat,idx) {
 	var ask = confirm("You are about to deactivate this chat forever. Are you sure?");
 	if (ask){
-	    var datar = $scope.chatresource.remove(params={id:key});
+	    var datar = $scope.chatresource.remove(params={id:chat});
 	    $scope.chats.splice(idx,1);
 	}
     }
