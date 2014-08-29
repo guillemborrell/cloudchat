@@ -415,5 +415,8 @@ class ChatResource(webapp2.RequestHandler):
                         "persistent": body['persistent']}
         chat.put()
 
-
-
+    @ndb.transactional
+    def delete(self):
+        chat = ndb.Key(urlsafe=self.request.get('id')).get()
+        chat.active = False
+        chat.put()

@@ -104,10 +104,11 @@
 		<th>Time created</th>
 		<th>Private</th>
 		<th>Persistent</th>
-		<th>Allow conversations</th>
+		<th>Conversations</th>
 		<th>Connected</th>
 		<th>Download messages.</th>
 		<th>Embed code</th>
+		<th>Actions</th>
 	      </tr>
 	      <tr ng-repeat="chat in chats">
 		<td>
@@ -133,6 +134,13 @@
 		</td>
 		<td ng-click="embedCode(chat)">
 		  <a><i class="fa fa-clipboard"></i></a>
+		</td>
+		<td>
+		  <button 
+		     class="btn btn-danger"
+		     ng-click="deactivate('{{ chat.key }}',$index)">
+		    Deactivate
+		  </button>
 		</td>
 	      </tr>
 	    </table>
