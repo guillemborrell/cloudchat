@@ -97,7 +97,7 @@ class Message(ndb.Model):
         curs = None
 
         while more:
-            if month:
+            if limit:
                 partial, curs, more = cls.query(
                     cls.date > datetime.datetime.now()-datetime.timedelta(days=20),
                     ancestor=ndb.Key(urlsafe=chat_key)
