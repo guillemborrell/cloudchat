@@ -134,44 +134,43 @@ function MainPage($scope,$resource,$sce) {
     };
     
     $scope.connect = function(){
-	$scope.channel = new goog.appengine.Channel($scope.token);
-	$scope.handler = {
-	    'onopen': $scope.onOpened,
-	    'onmessage': $scope.onMessage,
-	    'onerror': function(){alert("Error has occurred");},
-	    'onclose': $scope.onClosed,
-	}
-	$scope.socket = $scope.channel.open($scope.handler);
-	$scope.socket.onopen = $scope.onOpened;
-	$scope.socket.onmessage = $scope.onMessage;
-    }
+	var data = $scope.tokenresource.get(
+	    params={key:getParameterByName('key')}, function(){
+    		$scope.token = data.token;
+		$scope.id = data.id;
+		$scope.conversations = data.conversations;
 
-
-    var data = $scope.tokenresource.get(
-	params={key:getParameterByName('key')}, function(){
-    	    $scope.token = data.token;
-	    $scope.id = data.id;
-	    $scope.conversations = data.conversations;
-	    $scope.connect();
-	    var dataa = $scope.archiveResource.get(
-		params={id: $scope.id},
-		function() {
-		    $scope.more = dataa.more;
-		    $scope.cursor = dataa.cursor;
-		    for ( i in dataa.messages ){
-			$scope.messages.push(
-			    {"author": $sce.trustAsHtml(dataa.messages[i].author),
-			     "when": dataa.messages[i].when,
-			     "id": dataa.messages[i].id,
-			     "text": $sce.trustAsHtml(dataa.messages[i].text)}
-			)
+		var dataa = $scope.archiveResource.get(
+		    params={id: $scope.id},
+		    function() {
+			$scope.more = dataa.more;
+			$scope.cursor = dataa.cursor;
+			for ( i in dataa.messages ){
+			    $scope.messages.push(
+				{"author": $sce.trustAsHtml(
+				    dataa.messages[i].author),
+				 "when": dataa.messages[i].when,
+				 "id": dataa.messages[i].id,
+				 "text": $sce.trustAsHtml(
+				     dataa.messages[i].text)}
+			    )
+			}
 		    }
+		);
+		$scope.channel = new goog.appengine.Channel($scope.token);
+		$scope.handler = {
+		    'onopen': $scope.onOpened,
+		    'onmessage': $scope.onMessage,
+		    'onerror': function(){alert(
+			"Error has occurred, try reloading");},
+		    'onclose': $scope.onClosed,
 		}
-	    );
-	}
-    );
-
-
+		$scope.socket = $scope.channel.open($scope.handler);
+	    }
+	);
+    }
+    $scope.connect();
+    
     $scope.sendMessage = function(){
 	var data = $scope.messageresource.save({
 	    'id': $scope.id,

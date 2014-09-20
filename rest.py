@@ -139,14 +139,63 @@ class DownloadResource(webapp2.RequestHandler):
 
 class OpenResource(webapp2.RequestHandler):
     def post(self):
+        data = json.loads(self.request.body)
         user = users.get_current_user()
-        body = json.loads(self.request.body)
+        client_id = data['id']
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
         if user:
-            chat = ndb.Key(urlsafe=body['id'][:-8]).get()
             Activity(
                 user = user,
                 chat = chat.key).put()
+        
+        for client in chat.clients:
+            channel.send_message(
+                client,
+                json.dumps(
+                    {"clients":len(chat.clients)+1,
+                     "name": chat.name,
+                     "cursor": False,
+                     "message": []
+                 }
+                )
+            )
 
+
+        last_message_when = Message.query_time_from_chat(chat.key)
+        if last_message_when < (
+                datetime.datetime.now()-datetime.timedelta(hours=4)):
+            logging.info('Reset clients in chat {}'.format(chat.key.urlsafe()))
+            chat.reset_clients()
+        
+        chat.add_client(client_id)
+
+
+class CloseResource(webapp2.RequestHandler):
+    def post(self):
+        data = json.loads(self.request.body)
+        client_id = data['id']
+        chat = ndb.Key(urlsafe=client_id[:-8]).get()
+
+        for client in chat.clients:
+            channel.send_message(
+                client,
+                json.dumps(
+                    {"name": chat.name,
+                     "clients":len(chat.clients)-1,
+                     "cursor": False,
+                     "message": []
+                 }
+                )
+            )
+        
+        if len(chat.clients) == 1:
+            # No connections
+            if not chat.options['persistent']:
+                # If chat is not persistent
+                chat.active = False
+
+        chat.remove_client(client_id)
 
 
 class InviteResource(webapp2.RequestHandler):
@@ -302,29 +351,7 @@ class MessageResource(webapp2.RequestHandler):
 
 class ConnectionResource(webapp2.RequestHandler):
     def post(self):
-        client_id = self.request.get('from')
-        chat = ndb.Key(urlsafe=client_id[:-8]).get()
-        
-        for client in chat.clients:
-            channel.send_message(
-                client,
-                json.dumps(
-                    {"clients":len(chat.clients)+1,
-                     "name": chat.name,
-                     "cursor": False,
-                     "message": []
-                 }
-                )
-            )
-
-
-        last_message_when = Message.query_time_from_chat(chat.key)
-        if last_message_when < (
-                datetime.datetime.now()-datetime.timedelta(hours=4)):
-            logging.info('Reset clients in chat {}'.format(chat.key.urlsafe()))
-            chat.reset_clients()
-        
-        chat.add_client(client_id)
+        pass
 
 
 class DisconnectionResource(webapp2.RequestHandler):
@@ -363,8 +390,6 @@ class ChatResource(webapp2.RequestHandler):
             if user:
                 chats = ChatManager.query_user(user,10)
                 activity = Activity.query_user(user,10)
-            else:
-                pass
 
         else:
             chats = ChatManager.query_public(10)

@@ -34,7 +34,7 @@ class ChatManager(ndb.Model):
     @ndb.transactional
     def add_client(self, client):
         client_list = self.clients
-        client_list.append(client)
+        while not client in client_list: client_list.append(client)
         self.put()
 
     @ndb.transactional
