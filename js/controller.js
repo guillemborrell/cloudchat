@@ -80,7 +80,7 @@ function MainPage($scope,$resource,$sce) {
     $scope.archiveResource = $resource('/API/archive');
     $scope.oninviteresource = $resource('/API/invite');
     $scope.onopenresource = $resource('/API/opened');
-    $scope.onclosedresource = $resource('/API/closed');
+    $scope.onclseresource = $resource('/API/closed');
     $scope.tokenresource = $resource('/API/token');
     $scope.messageresource = $resource('/API/message');
 
@@ -99,7 +99,7 @@ function MainPage($scope,$resource,$sce) {
     };
 
     $scope.onClosed = function() {
-	var data = onopenresource.save({'id': $scope.id});
+	var data = $scope.onclseresource.save({'id': $scope.id});
     };
 
 
