@@ -18,6 +18,9 @@ function IndexPage($scope, $resource){
 				)
 }
 
+function getRandomStamp() {
+    return Math.floor(Math.random() * (999999 - 100000)) + 100000;
+}
 
 function UserPage($scope, $resource) {
     $scope.name = "";
@@ -94,7 +97,7 @@ function MainPage($scope,$resource,$sce) {
     };
 
     $scope.onClosed = function() {
-	var data = onopenresource.save({'id': $scope.id});
+	var data = $scope.onclosedresource.save({'id': $scope.id});
     };
 
 
@@ -130,7 +133,7 @@ function MainPage($scope,$resource,$sce) {
 	$scope.handler = {
 	    'onopen': $scope.onOpened,
 	    'onmessage': $scope.onMessage,
-	    'onerror': function() {},
+	    'onerror': function(){alert("Error has occurred");},
 	    'onclose': $scope.onClosed,
 	}
 	$scope.socket = $scope.channel.open($scope.handler);
@@ -169,8 +172,17 @@ function MainPage($scope,$resource,$sce) {
 	    'id': $scope.id,
 	    'author': $scope.author,
 	    'text': $scope.message
+	},function(){
+	    $scope.messages.push(
+		{"author": $scope.author,
+		 "when": "now",
+		 "id": $scope.id,
+		 "text": $scope.message}
+	    );
+	},function(){
+	    alert("Connection is not active. Try reloading");
 	}
-				       );
+					      );
 	$scope.message="";
 	$scope.newMessageCounter = 0;
 	document.title = $scope.title;
@@ -190,7 +202,7 @@ function MainPage($scope,$resource,$sce) {
 			     "when": dataa.messages[i].when,
 			     "id": dataa.messages[i].id,
 			     "text": $sce.trustAsHtml(dataa.messages[i].text)}
-			)
+			);
 		    }
 		}
 	    );
