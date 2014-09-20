@@ -30,8 +30,33 @@ function UserPage($scope, $resource) {
     $scope.privte = false;
     $scope.chats = [];
     $scope.activity = [];
-    var ongetresource = $resource('/API/chat?user=true', {}, {});
-    var data = ongetresource.get({}, function(){
+    $scope.chatresource = $resource('/API/chat');
+    $scope.replaceSave = function(chat) {
+	chat.save = false;
+    }
+    $scope.createChat = function() {
+	var datas = $scope.chatresource.save({
+	    "name": $scope.name,
+	    "save": $scope.save,
+	    "persistent": $scope.persistent,
+	    "private": $scope.privte,
+	    "conversations": $scope.conversations
+	}
+					   );
+	document.getElementById("form").innerHTML = '<p>Successfully created. <a href="/new">Refresh</a> the page.</p>';
+    }
+    $scope.embedCode = function(chat) {
+	var embed_string = '<iframe width="320px" height="600px" scrolling="auto", src=http://cloudchatroom.appspot.com/embed?key=' + chat.key + '"></iframe>';
+	window.prompt("Copy to clipboard: Ctrl+C, Enter", embed_string);
+    }
+    $scope.deactivate = function(chat,idx) {
+	var ask = confirm("You are about to deactivate this chat forever. Are you sure?");
+	if (ask){
+	    var datar = $scope.chatresource.remove(params={id:chat});
+	    $scope.chats.splice(idx,1);
+	}
+    }
+    var data = $scope.chatresource.get(params={user:'true'}, function(){
 	for (i in data.chats){
 	    $scope.chats.push(data.chats[i]);
 	}
@@ -39,27 +64,7 @@ function UserPage($scope, $resource) {
 	    $scope.activity.push(data.activity[j]);
 	}
     }
-				)
-    $scope.replaceSave = function(chat) {
-	chat.save = false;
-    }
-
-    $scope.createChat = function() {
-	var oncreateresource = $resource('/API/chat',{}, { post: {method:'POST'}});
-	var data = oncreateresource.post({
-	    "name": $scope.name,
-	    "save": $scope.save,
-	    "persistent": $scope.persistent,
-	    "private": $scope.privte,
-	    "conversations": $scope.conversations
-	    }
-					);
-	document.getElementById("form").innerHTML = '<p>Successfully created. <a href="/new">Refresh</a> the page.</p>';
-    }
-    $scope.embedCode = function(chat) {
-	var embed_string = '<iframe width="320px" height="600px" scrolling="auto", src=http://cloudchatroom.appspot.com/embed?key=' + chat.key + '"></iframe>';
-	window.prompt("Copy to clipboard: Ctrl+C, Enter", embed_string);
-    }
+				  );
 }
 
 function MainPage($scope,$resource,$sce) {
@@ -78,7 +83,7 @@ function MainPage($scope,$resource,$sce) {
     $scope.archiveResource = $resource('/API/archive');
     $scope.oninviteresource = $resource('/API/invite');
     $scope.onopenresource = $resource('/API/opened');
-    $scope.onclosedresource = $resource('/API/closed');
+    $scope.onclseresource = $resource('/API/closed');
     $scope.tokenresource = $resource('/API/token');
     $scope.messageresource = $resource('/API/message');
 
@@ -97,7 +102,7 @@ function MainPage($scope,$resource,$sce) {
     };
 
     $scope.onClosed = function() {
-	var data = $scope.onclosedresource.save({'id': $scope.id});
+	var data = $scope.onclseresource.save({'id': $scope.id});
     };
 
 

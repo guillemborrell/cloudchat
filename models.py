@@ -91,16 +91,25 @@ class Message(ndb.Model):
 
 
     @classmethod
-    def query_all_from_chat(cls,chat_key):
+    def query_all_from_chat(cls,chat_key,limit):
         messages = list()
         more = True
         curs = None
 
         while more:
-            partial, curs, more = cls.query(
-                ancestor=ndb.Key(urlsafe=chat_key)).order(
-                    -cls.date).fetch_page(
-                        100, start_cursor = curs)
+            if limit:
+                partial, curs, more = cls.query(
+                    cls.date > datetime.datetime.now()-datetime.timedelta(days=20),
+                    ancestor=ndb.Key(urlsafe=chat_key)
+                    ).order(
+                        -cls.date).fetch_page(
+                            100, start_cursor = curs)
+                
+            else:
+                partial, curs, more = cls.query(
+                    ancestor=ndb.Key(urlsafe=chat_key)).order(
+                        -cls.date).fetch_page(
+                            100, start_cursor = curs)
 
             for m in partial:
                 messages.append(

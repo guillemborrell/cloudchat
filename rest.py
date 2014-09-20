@@ -1,4 +1,3 @@
-
 import datetime
 import os
 import json
@@ -127,7 +126,7 @@ class DownloadResource(webapp2.RequestHandler):
             
         else:
             text = []
-            for message in Message.query_all_from_chat(chat_key):
+            for message in Message.query_all_from_chat(chat_key,limit=True):
                 text.append(u'{}, {}: {}'.format(message['author'],
                                                  message['date'],
                                                  message['text'])
@@ -415,5 +414,8 @@ class ChatResource(webapp2.RequestHandler):
                         "persistent": body['persistent']}
         chat.put()
 
-
-
+    @ndb.transactional
+    def delete(self):
+        chat = ndb.Key(urlsafe=self.request.get('id')).get()
+        chat.active = False
+        chat.put()
