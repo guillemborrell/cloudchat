@@ -176,14 +176,7 @@ function MainPage($scope,$resource,$sce) {
 	    'id': $scope.id,
 	    'author': $scope.author,
 	    'text': $scope.message
-	},function(){
-	    $scope.messages.push(
-		{"author": $scope.author,
-		 "when": "now",
-		 "id": $scope.id,
-		 "text": $scope.message}
-	    );
-	},function(){
+	},function(){},function(){
 	    alert("Connection is not active. Try reloading");
 	}
 					      );
