@@ -289,9 +289,13 @@ class ArchiveResource(webapp2.RequestHandler):
                                   "text": prettify(cgi.escape(m.text))}
             )
             
+        try:
+            cursor_key = cursor.urlsafe()
+        except AttributeError:
+            cursor_key = ''
 
         self.response.out.headers['Content-Type'] = 'application/json'
-        self.response.out.write(json.dumps({'cursor': cursor.urlsafe(),
+        self.response.out.write(json.dumps({'cursor': cursor_key,
                                             'more': more,
                                             'messages': messages_sent}))
 
