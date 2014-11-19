@@ -76,7 +76,7 @@ def prettify(message):
             )
         elif any([fmt in w for fmt in image_formats]):
             newmessage.append(
-                u'<img src="{}" class="img-responsive">'.format(w)
+                u'<a href="{}" target="_blank"><img src="{}" class="img-responsive"></a>'.format(w)
             )
         elif any([fmt in w for fmt in urls]):
             newmessage.append(
