@@ -200,7 +200,7 @@ class CloseResource(webapp2.RequestHandler):
 
 class InviteResource(webapp2.RequestHandler):
     def print_time(self):
-        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
+        return datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')        
 
     def post(self):
         body = json.loads(self.request.body)
@@ -285,7 +285,7 @@ class ArchiveResource(webapp2.RequestHandler):
         for m in messages:
             messages_sent.append({"author": cgi.escape(m.author),
                                   "id": ''.join([client_id[:-8],m.client]),
-                                  "when": m.date.strftime("%b %d %Y %H:%M:%S"),
+                                  "when": m.date.strftime('%Y-%m-%dT%H:%M:%SZ'),
                                   "text": prettify(cgi.escape(m.text))}
             )
             
@@ -312,7 +312,7 @@ class ThreadedMessage(Thread):
 
 class MessageResource(webapp2.RequestHandler):
     def print_time(self):
-        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")        
+        return datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')        
         
     def post(self):
         body = json.loads(self.request.body)
@@ -386,7 +386,7 @@ class DisconnectionResource(webapp2.RequestHandler):
 
 class ChatResource(webapp2.RequestHandler):
     def print_time(self):
-        return datetime.datetime.now().strftime("%b %d %Y %H:%M:%S") 
+        return datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ') 
 
     def get(self):
         if self.request.get('user'):
@@ -403,7 +403,7 @@ class ChatResource(webapp2.RequestHandler):
         for c in chats:
             chat_list.append(
                 {"name": c.name,
-                 "date": c.date.strftime("%b %d %Y %H:%M:%S"),
+                 "date": c.date.strftime('%Y-%m-%dT%H:%M:%SZ'),
                  "owner": c.owner.nickname(),
                  "key": c.key.urlsafe(),
                  "persistent": c.options['persistent'],
@@ -418,9 +418,9 @@ class ChatResource(webapp2.RequestHandler):
             thischat = a.chat.get()
             activity_list.append(
                 {"name": thischat.name,
-                 "date": a.date.strftime("%b %d %Y %H:%M:%S"),
+                 "date": a.date.strftime('%Y-%m-%dT%H:%M:%SZ'),
                  "key":  thischat.key.urlsafe(),
-                 "last": Message.query_time_from_chat(a.chat).strftime("%b %d %Y %H:%M:%S"),
+                 "last": Message.query_time_from_chat(a.chat).strftime('%Y-%m-%dT%H:%M:%SZ'),
                  "creator": thischat.owner.nickname()}
             )
 
