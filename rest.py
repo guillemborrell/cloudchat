@@ -120,7 +120,7 @@ class DownloadResource(webapp2.RequestHandler):
             self.response.out.headers['Content-Type'] = 'application/json'
             self.response.out.write(
                 json.dumps(
-                    Message.query_all_from_chat(chat_key)
+                    Message.query_all_from_chat(chat_key,limit=False)
                 )
             )
             
