@@ -26,6 +26,7 @@ except NameError:
 #global regexp
 regexp_latex = re.compile("\\$.*?(?<!\\\\)\\$")
 
+
 def parse_math(message):
     equations = regexp_latex.findall(message)
 
@@ -118,24 +119,21 @@ class DownloadResource(webapp2.RequestHandler):
         
         if form == 'json':
             self.response.out.headers['Content-Type'] = 'application/json'
-            self.response.out.write(
-                json.dumps(
-                    Message.query_all_from_chat(chat_key,limit=False)
-                )
-            )
+            self.response.out.write('[')
+            for m in Message.query_all_from_chat(chat_key,limit=False):
+                self.response.out.write(json.dumps(m)) 
+
+            self.response.out.write(']')
             
         else:
-            text = []
-            for message in Message.query_all_from_chat(chat_key,limit=True):
-                text.append(u'{}, {}: {}'.format(message['author'],
-                                                 message['date'],
-                                                 message['text'])
-                        )
-            
-            text.reverse()
             self.response.out.headers['Content-Type'] = 'text/plain'
-            self.response.out.write(u'\n'.join(text))
-
+            for message in Message.query_all_from_chat(chat_key,limit=True):
+                self.response.out.write(
+                    u'{}, {}: {}'.format(message['author'],
+                                         message['date'],
+                                         message['text'])
+                )
+            
 
 class OpenResource(webapp2.RequestHandler):
     def post(self):

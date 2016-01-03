@@ -112,13 +112,9 @@ class Message(ndb.Model):
                             100, start_cursor = curs)
 
             for m in partial:
-                messages.append(
-                    {'author': m.author,
-                     'date': m.date.strftime("%b %d %Y %H:%M:%S"),
-                     'text': m.text}
-                    )
-
-        return messages
+                yield  {'author': m.author,
+                        'date': m.date.strftime("%b %d %Y %H:%M:%S"),
+                        'text': m.text}
 
 
 class Event(ndb.Model):
