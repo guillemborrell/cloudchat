@@ -121,7 +121,8 @@ class DownloadResource(webapp2.RequestHandler):
             self.response.out.headers['Content-Type'] = 'application/json'
             self.response.out.write('[')
             for m in Message.query_all_from_chat(chat_key,limit=False):
-                self.response.out.write(json.dumps(m)) 
+                self.response.out.write(json.dumps(m))
+                self.response.out.write(',')
 
             self.response.out.write(']')
             
@@ -129,9 +130,9 @@ class DownloadResource(webapp2.RequestHandler):
             self.response.out.headers['Content-Type'] = 'text/plain'
             for message in Message.query_all_from_chat(chat_key,limit=True):
                 self.response.out.write(
-                    u'{}, {}: {}'.format(message['author'],
-                                         message['date'],
-                                         message['text'])
+                    u'{}, {}: {}\n'.format(message['author'],
+                                           message['date'],
+                                           message['text'])
                 )
             
 
