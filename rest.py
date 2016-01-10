@@ -127,7 +127,7 @@ class DownloadResource(webapp2.RequestHandler):
                                       False)
             zmemory.writestr(
                 'messages.json',
-                '[ {} ]'.format(',',join(
+                '[ {} ]'.format(','.join(
                     [json.dumps(m) for m in Message.query_all_from_chat(chat_key,limit=False)])))
             in_memory.seek(0)
             self.response.out.write(in_memory.read())
