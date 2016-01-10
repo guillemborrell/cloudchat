@@ -15,6 +15,7 @@ except ImportError:
 
 from StringIO import StringIO
 from threading import Thread
+import zipfile
 
 # global font properties for math
 try:
@@ -118,13 +119,18 @@ class DownloadResource(webapp2.RequestHandler):
         form = self.request.get('format')
         
         if form == 'json':
-            self.response.out.headers['Content-Type'] = 'application/json'
-            self.response.out.write('[')
-            for m in Message.query_all_from_chat(chat_key,limit=False):
-                self.response.out.write(json.dumps(m))
-                self.response.out.write(',')
-
-            self.response.out.write(']')
+            self.response.out.headers['Content-Type'] = 'application/zip'
+            in_memory = StringIO()
+            zmemory = zipfile.ZipFile(in_memory,
+                                      "a",
+                                      zipfile.ZIP_DEFLATED,
+                                      False)
+            zmemory.writestr(
+                'messages.json',
+                '[ {} ]'.format(',',join(
+                    [json.dumps(m) for m in Message.query_all_from_chat(chat_key,limit=False)])))
+            in_memory.seek(0)
+            self.response.out.write(in_memory.read())
             
         else:
             self.response.out.headers['Content-Type'] = 'text/plain'
