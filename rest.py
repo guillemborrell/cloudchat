@@ -122,14 +122,15 @@ class DownloadResource(webapp2.RequestHandler):
             self.response.out.headers['Content-Type'] = 'application/zip'
             in_memory = StringIO()
             zmemory = zipfile.ZipFile(in_memory,
-                                      "a",
-                                      zipfile.ZIP_DEFLATED,
-                                      False)
+                                      "w",
+                                      zipfile.ZIP_DEFLATED)
             zmemory.writestr(
                 'messages.json',
                 '[ {} ]'.format(','.join(
                     [json.dumps(m) for m in Message.query_all_from_chat(chat_key,limit=False)])))
             in_memory.seek(0)
+            zmemory.close()
+            
             self.response.out.write(in_memory.read())
             
         else:
